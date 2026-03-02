@@ -1,0 +1,12 @@
+ <div class="backlog-container">
+      <h2>Backlog ({{ backlogItems.length }} items)</h2>
+      <div *ngIf="loading" class="loading">Loading...</div>
+      <div class="backlog-grid">
+        <div *ngFor="let item of backlogItems" class="backlog-card">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.description }}</p>
+          <span class="category [item.category]">{{ item.category }}</span>
+          <span class="hours">{{ item.estimatedHours }}h</span>
+        </div>
+      </div>
+    </div>
