@@ -1,12 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { TeamSetupComponent } from './pages/team-setup/team-setup';
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [TeamSetupComponent],
+  template: `<app-team-setup></app-team-setup>`
 })
-export class App {
-  protected readonly title = signal('weekly-planner-ui');
-}
+export class AppComponent {}
