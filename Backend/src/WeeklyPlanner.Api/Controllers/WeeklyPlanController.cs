@@ -22,10 +22,10 @@ namespace WeeklyPlanner.Api.Controllers
         {
             var today = DateTime.Today;
             var weekStart = today.AddDays(-(int)today.DayOfWeek); // Monday
-            
+
             var plan = await _context.WeeklyPlans
                 .FirstOrDefaultAsync(p => p.WeekStart.Date == weekStart.Date);
-                
+
             return plan ?? new WeeklyPlan { WeekStart = weekStart, IsFrozen = false };
         }
 
@@ -50,5 +50,11 @@ namespace WeeklyPlanner.Api.Controllers
             await _context.SaveChangesAsync();
             return Ok(plan);
         }
+        [HttpGet("active-exists")]
+        public IActionResult HasActivePlan() => Ok(false);  // Query DB later
+
+        [HttpGet("../user/profile")]
+        public IActionResult GetProfile() => Ok(new { name = "jj", role = "Team Lead" });
+
     }
 }
