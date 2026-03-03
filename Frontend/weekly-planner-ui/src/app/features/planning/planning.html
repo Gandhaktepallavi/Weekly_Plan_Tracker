@@ -1,4 +1,58 @@
-<div class="planning-container">
-  <h2>Weekly Planning</h2>
-  <p>Plan your tasks for the week here.</p>
+<div class="container">
+
+  <button routerLink="/home" class="back-btn">← Home</button>
+
+  <h2>Set Up This Week's Plan</h2>
+
+  <!-- Date -->
+  <div class="card">
+    <label>Planning date (pick a Tuesday)</label>
+    <input type="date" [(ngModel)]="planningDate" (change)="onDateChange()" />
+    <div *ngIf="workPeriod">
+      Work period: {{ workPeriod }}
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="card">
+    <h3>Who is working this week?</h3>
+
+    <div *ngFor="let member of teamMembers">
+      <input type="checkbox"
+             [checked]="selectedMembers.includes(member.id)"
+             (change)="toggleMember(member.id)" />
+      {{ member.name }}
+      <span *ngIf="member.isTeamLead" class="badge">Lead</span>
+    </div>
+
+    <div>
+      Team members selected: {{ selectedMembers.length }}.
+      Total hours to plan: {{ totalHours }}
+    </div>
+  </div>
+
+  <!-- Percentage Split -->
+  <div class="card">
+    <h3>How should the hours be split?</h3>
+
+    <label>Client Focused %</label>
+    <input type="number" [(ngModel)]="clientPercent" />
+
+    <label>Tech Debt %</label>
+    <input type="number" [(ngModel)]="techDebtPercent" />
+
+    <label>R&D %</label>
+    <input type="number" [(ngModel)]="rndPercent" />
+
+    <div [ngClass]="totalPercent === 100 ? 'validation-valid' : 'validation-invalid'">
+  Total: {{ totalPercent }}% (must be 100%)
+</div>
+  </div>
+
+  <button
+    [disabled]="!isValid"
+    (click)="openPlanning()">
+    Open Planning for the Team
+  </button>
+
 </div>

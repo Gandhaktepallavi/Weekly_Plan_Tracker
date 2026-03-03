@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
+ 
 interface TeamMember {
   id: string;
   name: string;
@@ -13,9 +14,12 @@ interface TeamMember {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './team-setup.html',
-  styleUrl: './team-setup.css'
+  styleUrl: './team-setup.css',
+  
 })
 export class TeamSetupComponent {
+
+  constructor(private router: Router) {}
 
   name: string = '';
   members: TeamMember[] = [];
@@ -47,5 +51,12 @@ export class TeamSetupComponent {
     const hasMembers = this.members.length > 0;
     const hasLead = this.members.some(m => m.isTeamLead);
     return hasMembers && hasLead;
+  }
+
+   goToHome() {
+    if (!this.canProceed()) return;
+      localStorage.setItem('teamMembers', JSON.stringify(this.members));
+
+    this.router.navigate(['/home']);
   }
 }

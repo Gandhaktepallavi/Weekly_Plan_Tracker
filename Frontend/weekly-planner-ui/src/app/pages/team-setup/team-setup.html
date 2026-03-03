@@ -37,7 +37,9 @@
 
   <button
     class="done-btn"
-    [disabled]="!canProceed()">
+    [disabled]="!canProceed()"
+      (click)="goToHome()">
+
     Done — Go to Home Screen
   </button>
 
