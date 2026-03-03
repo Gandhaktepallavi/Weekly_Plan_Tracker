@@ -8,7 +8,7 @@ import { BacklogItem, WeeklyPlan } from '../shared/models/backlog-item';
 })
 export class PlannerApiService {
 
-  private apiUrl = 'https://localhost:5120/api';
+  private apiUrl = 'http://localhost:5120/api';
 
   constructor(private http: HttpClient) {}
 
@@ -19,4 +19,11 @@ export class PlannerApiService {
   getCurrentWeeklyPlan(): Observable<WeeklyPlan> {
     return this.http.get<WeeklyPlan>(`${this.apiUrl}/weekly-plans/current`);
   }
+  getActivePlan(): Observable<boolean> {
+  return this.http.get<boolean>('/api/plans/active-exists');
+}
+getUserProfile(): Observable<{name: string, role: string}> {
+  return this.http.get<{name: string, role: string}>('/api/user/profile');
+}
+
 }
