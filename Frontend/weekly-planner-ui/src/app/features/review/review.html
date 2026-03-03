@@ -1,0 +1,62 @@
+<div class="review-container">
+
+  <button routerLink="/dashboard" class="back-btn">← Home</button>
+
+  <h2>Review the Team's Plan</h2>
+
+  <p>
+    Week of {{ planning.planningDate }}.
+    {{ planning.selectedMembers.length }} team members.
+    {{ totalHours }} total hours.
+  </p>
+
+  <!-- Category Summary -->
+  <h3>Category Summary</h3>
+
+  <table>
+    <tr>
+      <th>Category</th>
+      <th>Budget</th>
+      <th>Planned</th>
+      <th>Status</th>
+    </tr>
+
+    <tr *ngFor="let c of categorySummary">
+      <td>{{ c.name }}</td>
+      <td>{{ c.budget }}h</td>
+      <td>{{ c.planned }}h</td>
+      <td [class.error]="c.planned !== c.budget">
+        Off by {{ c.budget - c.planned }}h
+      </td>
+    </tr>
+  </table>
+
+  <!-- Member Summary -->
+  <h3>Member Summary</h3>
+
+  <div *ngFor="let m of memberSummary" class="member-card">
+    {{ m.name }}
+    <span class="hours">
+      {{ m.planned }} / {{ m.target }}h
+    </span>
+  </div>
+
+  <!-- Freeze Errors -->
+  <div *ngIf="errors.length > 0" class="error-box">
+    <h4>Can't freeze yet:</h4>
+    <ul>
+      <li *ngFor="let e of errors">{{ e }}</li>
+    </ul>
+  </div>
+
+  <button
+    [disabled]="errors.length > 0"
+    (click)="freezePlan()">
+    Freeze the Plan
+  </button>
+
+  <button class="cancel" (click)="cancelPlanning()">
+    Cancel Planning
+  </button>
+
+</div>

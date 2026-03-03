@@ -1,0 +1,46 @@
+<div class="container">
+
+  <h1>👋 Welcome! Let's set up your team.</h1>
+  <p class="subtitle">
+    Add the people on your team. Pick one person as the Team Lead.
+  </p>
+
+  <div class="input-section">
+    <input
+      type="text"
+      [(ngModel)]="name"
+      placeholder="Type a name here"
+      (keyup.enter)="addMember()"
+    />
+    <button (click)="addMember()">Add This Person</button>
+  </div>
+
+  <div class="member-list" *ngIf="members.length === 0">
+    No team members added yet.
+  </div>
+
+  <div class="member-card" *ngFor="let member of members">
+    <div class="member-info">
+      <span>{{ member.name }}</span>
+      <span *ngIf="member.isTeamLead" class="lead-badge">Team Lead</span>
+    </div>
+
+    <div class="member-actions">
+      <button (click)="setTeamLead(member.id)">
+        Make Lead
+      </button>
+      <button class="delete" (click)="removeMember(member.id)">
+        Remove
+      </button>
+    </div>
+  </div>
+
+  <button
+    class="done-btn"
+    [disabled]="!canProceed()"
+      (click)="goToHome()">
+
+    Done — Go to Home Screen
+  </button>
+
+</div>

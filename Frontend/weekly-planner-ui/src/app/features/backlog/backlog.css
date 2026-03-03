@@ -1,0 +1,102 @@
+.container {
+  background: #0f172a;
+  min-height: 100vh;
+  padding: 40px;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.home-btn {
+  background: #e5e7eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.add-btn {
+  background: #3b82f6;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.form-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input, select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+}
+
+.category-buttons button {
+  margin-right: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.category-buttons .client { background: #3b82f6; }
+.category-buttons .tech { background: #f97316; }
+.category-buttons .rnd { background: #22c55e; }
+
+.active {
+  outline: 2px solid white;
+}
+
+.filters-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.item-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.Client-Focused { background: #3b82f6; }
+.Tech-Debt { background: #f97316; }
+.R\&D { background: #22c55e; }
+
+.delete {
+  background: #ef4444;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.empty {
+  background: #334155;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
