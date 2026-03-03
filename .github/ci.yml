@@ -20,7 +20,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
 
-          # IMPORTANT
           app_location: "Frontend/weekly-planner-ui"
           api_location: ""
-          output_location: "dist/weekly-planner-ui"
+          output_location: "dist/weekly-planner-ui/browser"
