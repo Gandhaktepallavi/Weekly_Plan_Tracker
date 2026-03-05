@@ -1,35 +1,50 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { PlannerApiService } from '../../core/planner-api';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
 })
 export class DashboardComponent implements OnInit {
-
-  planning: any;
+  dashboardData: any[] = [];
   showBanner: boolean = true;
 
-  constructor(private router: Router) {}
+  constructor(
+    private api: PlannerApiService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
-    const stored = localStorage.getItem('activePlanning');
-    if (stored) {
-      this.planning = JSON.parse(stored);
-    } else {
-      this.router.navigate(['/home']);
-    }
+    this.api.getDashboard().subscribe((data: any) => {
+      this.dashboardData = data;
+    });
   }
 
   cancelPlanning() {
-    localStorage.removeItem('activePlanning');
     this.router.navigate(['/home']);
   }
+
   goToReview() {
-  this.router.navigate(['/review']);
-}
+    this.router.navigate(['/review']);
+  }
+  goToPlanning() {
+    this.router.navigate(['/planning']);
+  }
+
+  goToBacklog() {
+    this.router.navigate(['/backlog']);
+  }
+
+  goToTeam() {
+    this.router.navigate(['/team']);
+  }
+
+  goToPastWeeks() {
+    this.router.navigate(['/review']);
+  }
 }

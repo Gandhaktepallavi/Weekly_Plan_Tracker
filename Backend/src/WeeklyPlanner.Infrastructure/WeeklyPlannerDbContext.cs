@@ -8,18 +8,15 @@ namespace WeeklyPlanner.Infrastructure
         public DbSet<BacklogItem> BacklogItems { get; set; } = null!;
         public DbSet<WeeklyPlan> WeeklyPlans { get; set; } = null!;
         public DbSet<PlannedTask> PlannedTasks { get; set; } = null!;
-
-        public WeeklyPlannerDbContext(DbContextOptions<WeeklyPlannerDbContext> options)
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
+        public WeeklyPlannerDbContext(DbContextOptions<WeeklyPlannerDbContext> options) 
             : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<BacklogItem>().HasKey(b => b.Id);
-            modelBuilder.Entity<WeeklyPlan>().HasKey(p => p.Id);
-            modelBuilder.Entity<PlannedTask>().HasKey(t => t.Id);
-
+            // Minimal Cosmos config - let EF auto-handle containers
             base.OnModelCreating(modelBuilder);
         }
     }

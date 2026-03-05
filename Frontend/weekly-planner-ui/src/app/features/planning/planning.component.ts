@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PlannerApiService } from '../../core/planner-api';
 
 interface TeamMember {
   id: string;
@@ -14,11 +15,13 @@ interface TeamMember {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './planning.html',
-  styleUrls: ['./planning.css']
+  styleUrls: ['./planning.css'],
 })
 export class PlanningComponent implements OnInit {
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private api: PlannerApiService
+  ) {}
   planningDate: string = '';
   workPeriod: string = '';
 
@@ -61,8 +64,7 @@ export class PlanningComponent implements OnInit {
     const end = new Date(selected);
     end.setDate(end.getDate() + 6); // Monday
 
-    this.workPeriod =
-      `${start.toISOString().split('T')[0]} to ${end.toISOString().split('T')[0]}`;
+    this.workPeriod = `${start.toISOString().split('T')[0]} to ${end.toISOString().split('T')[0]}`;
   }
 
   // -------------------------
@@ -70,7 +72,7 @@ export class PlanningComponent implements OnInit {
   // -------------------------
   toggleMember(id: string) {
     if (this.selectedMembers.includes(id)) {
-      this.selectedMembers = this.selectedMembers.filter(m => m !== id);
+      this.selectedMembers = this.selectedMembers.filter((m) => m !== id);
     } else {
       this.selectedMembers.push(id);
     }
@@ -82,7 +84,17 @@ export class PlanningComponent implements OnInit {
     // Example: 30 hours per member
     this.totalHours = this.selectedMembers.length * 30;
   }
+  assignTask(backlogId: string, memberId: string) {
+    const task = {
+      teamMemberId: memberId,
+      backlogItemId: backlogId,
+      plannedHours: 5,
+    };
 
+    this.api.assignTask(task).subscribe(() => {
+      alert('Task Assigned');
+    });
+  }
   // -------------------------
   // Percentage Validation
   // -------------------------
@@ -91,25 +103,24 @@ export class PlanningComponent implements OnInit {
   }
 
   get isValid(): boolean {
-    return this.totalPercent === 100
-      && this.selectedMembers.length > 0
-      && !!this.planningDate;
+    return this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
   }
 
- openPlanning() {
-  if (!this.isValid) return;
+  openPlanning() {
+    if (!this.isValid) return;
 
-  const planningData = {
-    planningDate: this.planningDate,
-    workPeriod: this.workPeriod,
-    selectedMembers: this.selectedMembers,
-    clientPercent: this.clientPercent,
-    techDebtPercent: this.techDebtPercent,
-    rndPercent: this.rndPercent,
-    isOpen: true
-  };
+    const planningData = {
+      planningDate: this.planningDate,
+      workPeriod: this.workPeriod,
+      selectedMembers: this.selectedMembers,
+      clientPercent: this.clientPercent,
+      techDebtPercent: this.techDebtPercent,
+      rndPercent: this.rndPercent,
+      isOpen: true,
+    };
 
-  localStorage.setItem('activePlanning', JSON.stringify(planningData));
+    localStorage.setItem('activePlanning', JSON.stringify(planningData));
 
-this.router.navigate(['/dashboard']);}
+    this.router.navigate(['/dashboard']);
+  }
 }

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using WeeklyPlanner.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using WeeklyPlanner.Infrastructure;
 
 namespace WeeklyPlanner.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/dashboard")]
     public class DashboardController : ControllerBase
     {
         private readonly WeeklyPlannerDbContext _context;
@@ -15,20 +15,19 @@ namespace WeeklyPlanner.Api.Controllers
             _context = context;
         }
 
-        [HttpGet("summary")]
-        public IActionResult Summary()
+        [HttpGet]
+        public async Task<IActionResult> GetDashboard()
         {
-            var total = _context.PlannedTasks.Count();
+            var data = await _context.TaskAssignments
+                .GroupBy(t => t.TeamMemberId)
+                .Select(g => new
+                {
+                    Member = g.Key,
+                    Progress = g.Average(x => x.ProgressPercent)
+                })
+                .ToListAsync();
 
-            var completed = _context.PlannedTasks
-                .Count(t => t.Progress == 100);
-
-            return Ok(new
-            {
-                TotalTasks = total,
-                Completed = completed,
-                Remaining = total - completed
-            });
+            return Ok(data);
         }
     }
 }

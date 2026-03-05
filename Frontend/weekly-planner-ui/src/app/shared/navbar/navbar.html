@@ -1,11 +1,9 @@
 <div class="navbar">
 
-  <!-- Left -->
-  <div class="logo" routerLink="/home">
+  <a class="logo" routerLink="/home">
     📄 Weekly Plan Tracker
-  </div>
+  </a>
 
-  <!-- Right -->
   <div class="right-section">
 
     <span class="user-pill">
@@ -19,7 +17,7 @@
     <a routerLink="/home">🏠 Home</a>
 
     <button class="toggle-btn" (click)="toggleTheme()">
-      ☀ Light
+      {{ darkMode ? '☀ Light' : '🌙 Dark' }}
     </button>
 
   </div>

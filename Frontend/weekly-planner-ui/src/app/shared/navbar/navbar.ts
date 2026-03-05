@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { PlannerApiService } from '../../core/planner-api';
 
 @Component({
   selector: 'app-navbar',
@@ -9,12 +10,28 @@ import { RouterModule } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
-  userName = 'pal'; // later load dynamically
-  isLead = true;
+  userName: string = '';
+  isLead: boolean = false;
+  darkMode = false;
+
+  constructor(private api: PlannerApiService) {}
+
+  ngOnInit() {
+    this.loadProfile();
+  }
+
+  loadProfile() {
+    this.api.getUserProfile().subscribe((data: any) => {
+      this.userName = data.name;
+      this.isLead = data.role === 'Team Lead';
+    });
+  }
 
   toggleTheme() {
-    document.body.classList.toggle('light-mode');
+    this.darkMode = !this.darkMode;
+    document.body.classList.toggle('light-theme');
   }
+
 }

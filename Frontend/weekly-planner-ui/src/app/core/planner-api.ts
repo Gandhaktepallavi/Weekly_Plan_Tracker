@@ -23,10 +23,6 @@ export class PlannerApiService {
     return this.http.get<boolean>(`${this.apiUrl}/weeklyplan/active-exists`);
   }
 
-  getUserProfile(): Observable<{ name: string; role: string }> {
-    return this.http.get<{ name: string; role: string }>(`${this.apiUrl}/user/profile`);
-  }
-
   getTeamMembers() {
     return this.http.get(`${this.apiUrl}/team-members`);
   }
@@ -49,4 +45,21 @@ export class PlannerApiService {
   deleteBacklogItem(id: string) {
     return this.http.delete(`${this.apiUrl}/backlog/${id}`);
   }
+  addTeamMember(member: any) {
+    return this.http.post(`${this.apiUrl}/team-members`, member);
+  }
+
+  makeLead(id: string) {
+    return this.http.put(`${this.apiUrl}/team-members/${id}/lead`, {});
+  }
+
+  deactivateMember(id: string) {
+    return this.http.put(`${this.apiUrl}/team-members/${id}/deactivate`, {});
+  }
+  updateMember(member:any){
+  return this.http.put(`${this.apiUrl}/team-members/${member.id}`, member);
+}
+getUserProfile() {
+  return this.http.get(`${this.apiUrl}/user/profile`);
+}
 }
