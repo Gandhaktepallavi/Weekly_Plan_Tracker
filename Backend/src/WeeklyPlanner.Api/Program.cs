@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using WeeklyPlanner.Infrastructure;
+using WeeklyPlanner.Application.Services;
+using WeeklyPlanner.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. CORS
+// 1️⃣ CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -14,29 +16,35 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 2. Controllers + Swagger
+// 2️⃣ Controllers + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. DbContext
+// 3️⃣ Services
+builder.Services.AddScoped<IBacklogService, BacklogService>();
+builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
+
+// 4️⃣ Database (Cosmos DB)
 builder.Services.AddDbContext<WeeklyPlannerDbContext>(options =>
-    options.UseInMemoryDatabase("WeeklyPlanner"));
+    options.UseCosmos(
+        builder.Configuration["Cosmos:AccountEndpoint"],
+        builder.Configuration["Cosmos:AccountKey"],
+        builder.Configuration["Cosmos:DatabaseName"]
+    ));
 
 var app = builder.Build();
 
-// 4. Development tools
+// 5️⃣ Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();             // ← HTTPS after CORS
-
-
-// 5. CRITICAL: CORS BEFORE HTTPS + Routing
-app.UseCors("AllowAngular");           // ← BEFORE
+// 6️⃣ Middleware
+app.UseCors("AllowAngular");
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

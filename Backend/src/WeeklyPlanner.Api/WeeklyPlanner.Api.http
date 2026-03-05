@@ -1,6 +1,49 @@
 @WeeklyPlanner.Api_HostAddress = http://localhost:5120
 
-GET {{WeeklyPlanner.Api_HostAddress}}/weatherforecast/
+### Get backlog items
+GET {{WeeklyPlanner.Api_HostAddress}}/api/backlog
 Accept: application/json
 
 ###
+
+### Add backlog item
+POST {{WeeklyPlanner.Api_HostAddress}}/api/backlog
+Content-Type: application/json
+
+{
+  "title": "Implement login feature",
+  "description": "Create login UI and authentication",
+  "category": "Client",
+  "estimatedHours": 6
+}
+
+###
+
+### Get current weekly plan
+GET {{WeeklyPlanner.Api_HostAddress}}/api/weeklyplan/current
+Accept: application/json
+
+###
+
+### Create weekly plan
+POST {{WeeklyPlanner.Api_HostAddress}}/api/weeklyplan
+Content-Type: application/json
+
+{
+  "userName": "TeamLead",
+  "weekStart": "2026-03-10T00:00:00",
+  "totalHours": 30,
+  "isFrozen": false
+}
+
+###
+
+### Freeze weekly plan
+PUT {{WeeklyPlanner.Api_HostAddress}}/api/weeklyplan/{id}/freeze
+Accept: application/json
+
+###
+
+### Dashboard summary
+GET {{WeeklyPlanner.Api_HostAddress}}/api/dashboard/summary
+Accept: application/json

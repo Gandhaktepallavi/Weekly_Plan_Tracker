@@ -21,21 +21,35 @@ namespace WeeklyPlanner.Api.Controllers
         public async Task<ActionResult<WeeklyPlan>> GetCurrentWeeklyPlan()
         {
             var today = DateTime.Today;
-            var weekStart = today.AddDays(-(int)today.DayOfWeek); // Monday
+
+            // Monday as start of week
+            var weekStart = today.AddDays(-(int)today.DayOfWeek + 1);
 
             var plan = await _context.WeeklyPlans
                 .FirstOrDefaultAsync(p => p.WeekStart.Date == weekStart.Date);
 
-            return plan ?? new WeeklyPlan { WeekStart = weekStart, IsFrozen = false };
+            if (plan == null)
+            {
+                return new WeeklyPlan
+                {
+                    WeekStart = weekStart,
+                    IsFrozen = false
+                };
+            }
+
+            return plan;
         }
 
-        // POST: api/weeklyplan (Lead creates plan)
+        // POST: api/weeklyplan
         [HttpPost]
         public async Task<ActionResult<WeeklyPlan>> CreateWeeklyPlan(WeeklyPlan plan)
         {
             plan.Id = Guid.NewGuid().ToString();
+
             _context.WeeklyPlans.Add(plan);
+
             await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetCurrentWeeklyPlan), plan);
         }
 
@@ -44,17 +58,35 @@ namespace WeeklyPlanner.Api.Controllers
         public async Task<IActionResult> FreezePlan(string id)
         {
             var plan = await _context.WeeklyPlans.FindAsync(id);
-            if (plan == null) return NotFound();
+
+            if (plan == null)
+                return NotFound();
 
             plan.IsFrozen = true;
+
             await _context.SaveChangesAsync();
+
             return Ok(plan);
         }
+
+        // GET: api/weeklyplan/active-exists
         [HttpGet("active-exists")]
-        public IActionResult HasActivePlan() => Ok(false);  // Query DB later
+        public async Task<IActionResult> HasActivePlan()
+        {
+            var exists = await _context.WeeklyPlans.AnyAsync(p => !p.IsFrozen);
 
-        [HttpGet("../user/profile")]
-        public IActionResult GetProfile() => Ok(new { name = "jj", role = "Team Lead" });
+            return Ok(exists);
+        }
 
+        // GET: api/weeklyplan/profile
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
+        {
+            return Ok(new
+            {
+                name = "Team Lead",
+                role = "Lead"
+            });
+        }
     }
 }
