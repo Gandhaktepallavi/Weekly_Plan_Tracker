@@ -46,11 +46,9 @@ builder.Services.AddDbContext<WeeklyPlannerDbContext>(options =>
 var app = builder.Build();
 
 // 5️⃣ Swagger
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 // 6️⃣ Middleware
 app.UseCors("AllowAngular");
