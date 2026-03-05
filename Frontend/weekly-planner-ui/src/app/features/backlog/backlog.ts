@@ -1,23 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-export type Category = 'Client Focused' | 'Tech Debt' | 'R&D';
-
-export interface BacklogItem {
-  id: string;
-  title: string;
-  category: Category;
-  estimatedHours: number;
-  isAssigned: boolean; // For Available filter
-}
+import { PlannerApiService } from '../../core/planner-api';
+import { BacklogItem } from '../../shared/models/backlog-item';
+import { Category } from '../../shared/models/backlog-item';
 
 @Component({
   selector: 'app-backlog',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './backlog.html',
-  styleUrls: ['./backlog.css']
+  styleUrls: ['./backlog.css'],
 })
 export class BacklogComponent implements OnInit {
 
@@ -34,15 +27,16 @@ export class BacklogComponent implements OnInit {
   category: Category = 'Client Focused';
   estimatedHours = 1;
 
+  constructor(private api: PlannerApiService) {}
+
   ngOnInit() {
-    const stored = localStorage.getItem('backlog');
-    if (stored) {
-      this.backlog = JSON.parse(stored);
-    }
+    this.loadBacklog();
   }
 
-  save() {
-    localStorage.setItem('backlog', JSON.stringify(this.backlog));
+  loadBacklog() {
+    this.api.getBacklog().subscribe(data => {
+      this.backlog = data;
+    });
   }
 
   toggleForm() {
@@ -53,16 +47,16 @@ export class BacklogComponent implements OnInit {
   addItem() {
     if (!this.title.trim()) return;
 
-    const newItem: BacklogItem = {
-      id: crypto.randomUUID(),
+    const newItem = {
       title: this.title,
       category: this.category,
-      estimatedHours: this.estimatedHours,
-      isAssigned: false
+      estimatedHours: this.estimatedHours
     };
 
-    this.backlog.push(newItem);
-    this.save();
+    this.api.addBacklogItem(newItem).subscribe(() => {
+      this.loadBacklog();
+    });
+
     this.toggleForm();
   }
 
@@ -73,14 +67,12 @@ export class BacklogComponent implements OnInit {
   }
 
   deleteItem(id: string) {
-    this.backlog = this.backlog.filter(b => b.id !== id);
-    this.save();
+    this.api.deleteBacklogItem(id).subscribe(() => {
+      this.loadBacklog();
+    });
   }
 
-  // ---------------------------
   // Filtering Logic
-  // ---------------------------
-
   get filteredItems() {
     return this.backlog.filter(item => {
 
@@ -98,4 +90,5 @@ export class BacklogComponent implements OnInit {
       return true;
     });
   }
+
 }
