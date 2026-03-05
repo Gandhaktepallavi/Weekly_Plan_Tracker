@@ -8,5 +8,6 @@ namespace WeeklyPlanner.Domain.Entities
         public string UserId { get; set; } = string.Empty;
         public double PlannedHours { get; set; }
         public double CompletedHours { get; set; }
+        public int Progress { get; set; } 
     }
 }

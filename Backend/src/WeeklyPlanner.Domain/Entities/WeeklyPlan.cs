@@ -5,21 +5,29 @@ namespace WeeklyPlanner.Domain.Entities
     public class WeeklyPlan
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public DateTime WeekStart { get; set; }      // ← ADD THIS
+
+        public string UserName { get; set; } = "";   // ✅ ADD THIS
+
+        public DateTime WeekStart { get; set; }
+        public int TotalHours { get; set; }   // ← ADD THIS
+
         public bool IsFrozen { get; set; }
-        
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public CategoryPercentages CategoryPercentages { get; set; } = new();
+
+        public List<CategoryAllocation> CategoryAllocations { get; set; } = new();
     }
 
-    public enum CategoryPercentages
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum CategoryType
     {
-        Client, TechDebt, RnD
+        Client,
+        TechDebt,
+        RnD
     }
 
     public class CategoryAllocation
     {
-        public CategoryPercentages Category { get; set; }
+        public CategoryType Category { get; set; }
+
         public double Percentage { get; set; }
     }
 }

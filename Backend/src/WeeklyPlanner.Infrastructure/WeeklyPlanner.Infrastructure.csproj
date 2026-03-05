@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\WeeklyPlanner.Application\WeeklyPlanner.Application.csproj" />
     <ProjectReference Include="..\WeeklyPlanner.Domain\WeeklyPlanner.Domain.csproj" />
+    <ProjectReference Include="..\WeeklyPlanner.Application\WeeklyPlanner.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
