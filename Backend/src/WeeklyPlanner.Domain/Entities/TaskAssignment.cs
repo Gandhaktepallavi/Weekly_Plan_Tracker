@@ -1,14 +1,15 @@
-namespace WeeklyPlanner.Domain.Entities;
-
-public class TaskAssignment
+namespace WeeklyPlanner.Domain.Entities
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public class TaskAssignment
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    public string TeamMemberId { get; set; }
+        public string TeamMemberId { get; set; }
 
-    public string BacklogItemId { get; set; }
+        public string BacklogItemId { get; set; }
 
-    public int PlannedHours { get; set; }
+        public int PlannedHours { get; set; }
 
-    public int ProgressPercent { get; set; }
+        public int ProgressPercent { get; set; } = 0;
+    }
 }

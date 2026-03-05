@@ -1,37 +1,52 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WeeklyPlanner.Infrastructure;
 using WeeklyPlanner.Domain.Entities;
 
-namespace WeeklyPlanner.Api.Controllers;
-
-[ApiController]
-[Route("api/tasks")]
-public class TaskController : ControllerBase
+namespace WeeklyPlanner.Api.Controllers
 {
-    public static List<TaskAssignment> Tasks = new();
-
-    [HttpGet]
-    public IActionResult Get()
+    [ApiController]
+    [Route("api/tasks")]
+    public class TaskController : ControllerBase
     {
-        return Ok(Tasks);
-    }
+        private readonly WeeklyPlannerDbContext _context;
 
-    [HttpPost]
-    public IActionResult Assign(TaskAssignment task)
-    {
-        Tasks.Add(task);
-        return Ok(task);
-    }
+        public TaskController(WeeklyPlannerDbContext context)
+        {
+            _context = context;
+        }
 
-    [HttpPut("{id}/progress")]
-    public IActionResult UpdateProgress(string id, int percent)
-    {
-        var task = Tasks.FirstOrDefault(x => x.Id == id);
+        [HttpGet]
+        public async Task<IActionResult> GetTasks()
+        {
+            var tasks = await _context.TaskAssignments.ToListAsync();
+            return Ok(tasks);
+        }
 
-        if (task == null)
-            return NotFound();
+        [HttpPost]
+        public async Task<IActionResult> AssignTask(TaskAssignment task)
+        {
+            task.Id = Guid.NewGuid().ToString();
 
-        task.ProgressPercent = percent;
+            _context.TaskAssignments.Add(task);
+            await _context.SaveChangesAsync();
 
-        return Ok(task);
+            return Ok(task);
+        }
+
+        [HttpPut("{id}/progress")]
+        public async Task<IActionResult> UpdateProgress(string id, int percent)
+        {
+            var task = await _context.TaskAssignments.FindAsync(id);
+
+            if (task == null)
+                return NotFound();
+
+            task.ProgressPercent = percent;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(task);
+        }
     }
 }

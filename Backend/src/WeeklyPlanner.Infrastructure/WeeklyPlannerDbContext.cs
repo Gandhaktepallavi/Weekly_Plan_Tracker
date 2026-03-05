@@ -8,7 +8,7 @@ namespace WeeklyPlanner.Infrastructure
         public DbSet<BacklogItem> BacklogItems { get; set; } = null!;
         public DbSet<WeeklyPlan> WeeklyPlans { get; set; } = null!;
         public DbSet<PlannedTask> PlannedTasks { get; set; } = null!;
-
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
         public WeeklyPlannerDbContext(DbContextOptions<WeeklyPlannerDbContext> options) 
             : base(options)
         {

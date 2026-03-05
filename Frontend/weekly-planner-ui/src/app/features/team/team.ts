@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PlannerApiService } from '../../core/planner-api';
 
 interface TeamMember {
   id: string;
@@ -23,53 +24,53 @@ export class TeamComponent implements OnInit {
   name = '';
   showToast = false;
 
-  constructor(private router: Router) {}
+  constructor(private api: PlannerApiService, private router: Router) {}
 
   ngOnInit() {
-    const stored = localStorage.getItem('teamMembers');
-    if (stored) {
-      this.members = JSON.parse(stored);
-    }
+    this.loadMembers();
   }
 
-  save() {
-    localStorage.setItem('teamMembers', JSON.stringify(this.members));
+  loadMembers() {
+    this.api.getTeamMembers().subscribe((data: any) => {
+      this.members = data;
+    });
   }
 
   addMember() {
     if (!this.name.trim()) return;
 
-    const newMember: TeamMember = {
-      id: crypto.randomUUID(),
-      name: this.name.trim(),
-      isLead: this.members.length === 0,
-      isActive: true
+    const member = {
+      name: this.name.trim()
     };
 
-    this.members.push(newMember);
-    this.save();
-
-    this.name = '';
-    this.showSuccess();
+    this.api.addTeamMember(member).subscribe(() => {
+      this.loadMembers();
+      this.name = '';
+      this.showSuccess();
+    });
   }
 
   editName(member: TeamMember) {
     const updated = prompt('Edit name:', member.name);
-    if (updated) {
-      member.name = updated;
-      this.save();
-    }
+    if (!updated) return;
+
+    const updatedMember = { ...member, name: updated };
+
+    this.api.updateMember(updatedMember).subscribe(() => {
+      this.loadMembers();
+    });
   }
 
   makeLead(member: TeamMember) {
-    this.members.forEach(m => m.isLead = false);
-    member.isLead = true;
-    this.save();
+    this.api.makeLead(member.id).subscribe(() => {
+      this.loadMembers();
+    });
   }
 
   deactivate(member: TeamMember) {
-    member.isActive = false;
-    this.save();
+    this.api.deactivateMember(member.id).subscribe(() => {
+      this.loadMembers();
+    });
   }
 
   showSuccess() {

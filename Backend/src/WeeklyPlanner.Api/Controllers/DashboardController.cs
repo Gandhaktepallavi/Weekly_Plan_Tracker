@@ -1,25 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
-using WeeklyPlanner.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using WeeklyPlanner.Infrastructure;
 
-namespace WeeklyPlanner.Api.Controllers;
-
-[ApiController]
-[Route("api/dashboard")]
-public class DashboardController : ControllerBase
+namespace WeeklyPlanner.Api.Controllers
 {
-    [HttpGet]
-    public IActionResult GetDashboard()
+    [ApiController]
+    [Route("api/dashboard")]
+    public class DashboardController : ControllerBase
     {
-        var tasks = TaskController.Tasks;
+        private readonly WeeklyPlannerDbContext _context;
 
-        var result = tasks
-            .GroupBy(t => t.TeamMemberId)
-            .Select(g => new
-            {
-                Member = g.Key,
-                Progress = g.Average(x => x.ProgressPercent)
-            });
+        public DashboardController(WeeklyPlannerDbContext context)
+        {
+            _context = context;
+        }
 
-        return Ok(result);
+        [HttpGet]
+        public async Task<IActionResult> GetDashboard()
+        {
+            var data = await _context.TaskAssignments
+                .GroupBy(t => t.TeamMemberId)
+                .Select(g => new
+                {
+                    Member = g.Key,
+                    Progress = g.Average(x => x.ProgressPercent)
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
     }
 }
