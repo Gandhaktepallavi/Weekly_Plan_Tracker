@@ -7,7 +7,6 @@ import { BacklogItem, WeeklyPlan } from '../shared/models/backlog-item';
   providedIn: 'root',
 })
 export class PlannerApiService {
-
   private apiUrl = 'http://localhost:5120/api';
 
   constructor(private http: HttpClient) {}
@@ -17,11 +16,11 @@ export class PlannerApiService {
   }
 
   getCurrentWeeklyPlan(): Observable<WeeklyPlan> {
-    return this.http.get<WeeklyPlan>(`${this.apiUrl}/weekly-plans/current`);
+    return this.http.get<WeeklyPlan>(`${this.apiUrl}/weeklyplan/current`);
   }
 
   getActivePlan(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/plans/active-exists`);
+    return this.http.get<boolean>(`${this.apiUrl}/weeklyplan/active-exists`);
   }
 
   getUserProfile(): Observable<{ name: string; role: string }> {
@@ -43,5 +42,11 @@ export class PlannerApiService {
   getDashboard() {
     return this.http.get(`${this.apiUrl}/dashboard`);
   }
+  addBacklogItem(item: any) {
+    return this.http.post(`${this.apiUrl}/backlog`, item);
+  }
 
+  deleteBacklogItem(id: string) {
+    return this.http.delete(`${this.apiUrl}/backlog/${id}`);
+  }
 }
