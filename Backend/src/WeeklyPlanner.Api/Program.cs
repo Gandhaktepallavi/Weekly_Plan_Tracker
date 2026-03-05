@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WeeklyPlanner.Infrastructure;
 using WeeklyPlanner.Application.Services;
 using WeeklyPlanner.Infrastructure.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,12 @@ builder.Services.AddCors(options =>
 });
 
 // 2️⃣ Controllers + Swagger
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -25,12 +31,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBacklogService, BacklogService>();
 builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
 
-// 4️⃣ Database (Cosmos DB)
+// 4️⃣ Cosmos DB configuration
+var cosmosEndpoint = builder.Configuration["Cosmos:AccountEndpoint"];
+var cosmosKey = builder.Configuration["Cosmos:AccountKey"];
+var cosmosDatabase = builder.Configuration["Cosmos:DatabaseName"];
+
 builder.Services.AddDbContext<WeeklyPlannerDbContext>(options =>
     options.UseCosmos(
-        builder.Configuration["Cosmos:AccountEndpoint"],
-        builder.Configuration["Cosmos:AccountKey"],
-        builder.Configuration["Cosmos:DatabaseName"]
+        cosmosEndpoint!,
+        cosmosKey!,
+        cosmosDatabase!
     ));
 
 var app = builder.Build();
