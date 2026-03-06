@@ -83,12 +83,7 @@ export class TeamSetupComponent implements OnInit {
     this.selectedUserId = member.id;
     localStorage.setItem('activeUser', JSON.stringify(member));
 
-    if (member.isTeamLead) {
-      this.router.navigate(['/home']);
-      return;
-    }
-
-    this.router.navigate(['/planning/new']);
+    this.router.navigate(['/home']);
   }
 
   private loadMembersFromStorage() {

@@ -34,8 +34,19 @@ export class PlanningComponent implements OnInit {
 
   totalHours: number = 0;
   validationError = '';
+  isCurrentUserLead = false;
 
   ngOnInit() {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    const activeUser = activeUserRaw ? JSON.parse(activeUserRaw) : null;
+    this.isCurrentUserLead = !!activeUser?.isTeamLead;
+
+    if (!this.isCurrentUserLead) {
+      this.validationError = 'Only Team Lead can set the weekly plan.';
+      this.router.navigate(['/home']);
+      return;
+    }
+
     this.api.getTeamMembers().subscribe({
       next: (members) => {
         this.teamMembers = members ?? [];
@@ -112,7 +123,7 @@ export class PlanningComponent implements OnInit {
   }
 
   get isValid(): boolean {
-    return this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
+    return this.isCurrentUserLead && this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
   }
 
   private persistAndGoToDashboard(planId?: string) {
@@ -133,6 +144,10 @@ export class PlanningComponent implements OnInit {
 
   openPlanning() {
     this.validationError = '';
+    if (!this.isCurrentUserLead) {
+      this.validationError = 'Only Team Lead can set the weekly plan.';
+      return;
+    }
     if (!this.isValid) {
       this.validationError = 'Please pick Tuesday, choose members, and make percentages total 100%.';
       return;
@@ -158,8 +173,7 @@ export class PlanningComponent implements OnInit {
       },
       error: (error) => {
         const message = String(error?.error || '');
-        this.validationError = message || 'Unable to open planning in API. Continuing to dashboard.';
-        this.persistAndGoToDashboard();
+        this.validationError = message || 'Unable to open planning. Please try again.';
       }
     });
   }
