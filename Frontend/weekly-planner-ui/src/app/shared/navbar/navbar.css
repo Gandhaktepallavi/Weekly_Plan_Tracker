@@ -11,6 +11,8 @@
   font-weight: bold;
   font-size: 18px;
   cursor: pointer;
+  color: aliceblue;
+  text-decoration: none;
 }
 
 .right-section {
@@ -43,6 +45,10 @@
 
 .right-section a:hover {
   text-decoration: underline;
+}
+
+.switch-link {
+  font-weight: 600;
 }
 
 .toggle-btn {

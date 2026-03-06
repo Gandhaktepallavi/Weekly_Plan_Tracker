@@ -26,6 +26,12 @@ export const routes: Routes = [
       .then(m => m.ReviewComponent)
 },
 {
+  path: 'history',
+  loadComponent: () =>
+    import('./features/history/history')
+      .then(m => m.HistoryComponent)
+},
+{
   path: 'backlog',
   loadComponent: () =>
     import('./features/backlog/backlog')

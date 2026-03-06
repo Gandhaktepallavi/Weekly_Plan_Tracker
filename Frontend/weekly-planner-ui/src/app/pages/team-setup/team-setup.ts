@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,12 +17,30 @@ interface TeamMember {
   styleUrl: './team-setup.css',
   
 })
-export class TeamSetupComponent {
+export class TeamSetupComponent implements OnInit {
 
   constructor(private router: Router) {}
 
   name: string = '';
   members: TeamMember[] = [];
+  selectedUserId: string = '';
+
+  ngOnInit() {
+    const storedMembers = localStorage.getItem('teamMembers');
+    if (storedMembers) {
+      this.members = JSON.parse(storedMembers);
+    }
+
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (activeUserRaw) {
+      const activeUser = JSON.parse(activeUserRaw);
+      this.selectedUserId = activeUser.id ?? '';
+    }
+  }
+
+  get hasExistingMembers(): boolean {
+    return this.members.length > 0;
+  }
 
   addMember() {
     if (!this.name.trim()) return;
@@ -53,10 +71,22 @@ export class TeamSetupComponent {
     return hasMembers && hasLead;
   }
 
-   goToHome() {
+  goToHome() {
     if (!this.canProceed()) return;
-      localStorage.setItem('teamMembers', JSON.stringify(this.members));
+    localStorage.setItem('teamMembers', JSON.stringify(this.members));
 
     this.router.navigate(['/home']);
+  }
+
+  chooseMember(member: TeamMember) {
+    this.selectedUserId = member.id;
+    localStorage.setItem('activeUser', JSON.stringify(member));
+
+    if (member.isTeamLead) {
+      this.router.navigate(['/home']);
+      return;
+    }
+
+    this.router.navigate(['/planning/new']);
   }
 }

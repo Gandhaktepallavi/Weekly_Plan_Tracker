@@ -1,65 +1,135 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { BacklogItem, WeeklyPlan } from '../shared/models/backlog-item';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class PlannerApiService {
-  private apiUrl = 'http://localhost:5120/api';
+  private readonly apiUrl = 'http://localhost:5120/api';
 
   constructor(private http: HttpClient) {}
 
+  // ==================== BACKLOG ====================
   getBacklog(): Observable<BacklogItem[]> {
-    return this.http.get<BacklogItem[]>(`${this.apiUrl}/backlog`);
+    return this.http.get<any[]>(`${this.apiUrl}/backlog`).pipe(
+      map(items =>
+        (items || []).map(item => ({
+          ...item,
+          isAssigned: item.isAssigned ?? false
+        } as BacklogItem))
+      )
+    );
   }
 
+  addBacklogItem(item: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backlog`, item);
+  }
+
+  createBacklogItem(item: any): Observable<any> {
+    return this.addBacklogItem(item);
+  }
+
+  updateBacklogItem(item: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/backlog/${item.id}`, item);
+  }
+
+  deleteBacklogItem(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/backlog/${id}`);
+  }
+
+  // ==================== WEEKLY PLAN ====================
   getCurrentWeeklyPlan(): Observable<WeeklyPlan> {
     return this.http.get<WeeklyPlan>(`${this.apiUrl}/weeklyplan/current`);
+  }
+
+  getPastWeeks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/weeklyplan/past`);
+  }
+
+  createWeeklyPlan(plan: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/weeklyplan`, plan);
+  }
+
+  freezePlan(id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/weeklyplan/${id}/freeze`, {});
   }
 
   getActivePlan(): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/weeklyplan/active-exists`);
   }
 
-  getTeamMembers() {
-    return this.http.get(`${this.apiUrl}/team-members`);
+  getUserProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/weeklyplan/profile`);
   }
 
-  assignTask(task: any) {
+  // ==================== TEAM MEMBERS ====================
+  getTeamMembers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/teammembers`);
+  }
+
+  addTeamMember(member: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/teammembers`, member);
+  }
+
+  updateMember(member: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/teammembers/${member.id}`, member);
+  }
+
+  updateTeamMember(member: any): Observable<any> {
+    return this.updateMember(member);
+  }
+
+  makeLead(id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/teammembers/${id}/set-lead`, {});
+  }
+
+  deactivateMember(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/teammembers/${id}`);
+  }
+
+  deleteTeamMember(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/teammembers/${id}`);
+  }
+
+  // ==================== TASKS ====================
+  assignTask(task: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/tasks`, task);
   }
 
-  updateProgress(id: string, percent: number) {
-    return this.http.put(`${this.apiUrl}/tasks/${id}/progress?percent=${percent}`, {});
+  getTasks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/tasks`);
   }
 
-  getDashboard() {
+  getPlannedTasksByPlanId(planId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/PlannedTasks/weekly-plan/${planId}`);
+  }
+
+  getPlanTeamSummary(planId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/PlannedTasks/summary/team/${planId}`);
+  }
+
+  // ==================== CATEGORY SETTINGS ====================
+  getCategorySettings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/categorysettings/current`);
+  }
+
+  getCategorySettingsCurrent(): Observable<any> {
+    return this.getCategorySettings();
+  }
+
+  // ==================== DASHBOARD ====================
+  getDashboard(): Observable<any> {
     return this.http.get(`${this.apiUrl}/dashboard`);
   }
-  addBacklogItem(item: any) {
-    return this.http.post(`${this.apiUrl}/backlog`, item);
+
+  // ==================== BACKUP ====================
+  importBackup(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backup/import`, payload);
   }
 
-  deleteBacklogItem(id: string) {
-    return this.http.delete(`${this.apiUrl}/backlog/${id}`);
+  seedSampleData(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backup/seed-sample`, {});
   }
-  addTeamMember(member: any) {
-    return this.http.post(`${this.apiUrl}/team-members`, member);
-  }
-
-  makeLead(id: string) {
-    return this.http.put(`${this.apiUrl}/team-members/${id}/lead`, {});
-  }
-
-  deactivateMember(id: string) {
-    return this.http.put(`${this.apiUrl}/team-members/${id}/deactivate`, {});
-  }
-  updateMember(member:any){
-  return this.http.put(`${this.apiUrl}/team-members/${member.id}`, member);
-}
-getUserProfile() {
-  return this.http.get(`${this.apiUrl}/user/profile`);
-}
 }

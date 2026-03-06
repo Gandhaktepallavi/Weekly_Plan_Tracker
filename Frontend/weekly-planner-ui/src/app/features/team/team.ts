@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 
 
 interface TeamMember {
   id: string;
   name: string;
-  isLead: boolean;
+  isTeamLead: boolean;
   isActive: boolean;
 }
 
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './team.html',
   styleUrls: ['./team.css']
 })
@@ -24,8 +24,9 @@ export class TeamComponent implements OnInit {
   members: TeamMember[] = [];
   name = '';
   showToast = false;
+  toastMessage = '';
 
-  constructor(private api: PlannerApiService, private router: Router) {}
+  constructor(private api: PlannerApiService) {}
 
   ngOnInit() {
     this.loadMembers();
@@ -33,7 +34,8 @@ export class TeamComponent implements OnInit {
 
   loadMembers() {
     this.api.getTeamMembers().subscribe((data: any) => {
-      this.members = data;
+      this.members = data ?? [];
+      this.syncTeamMembersToLocalStorage();
     });
   }
 
@@ -47,7 +49,7 @@ export class TeamComponent implements OnInit {
     this.api.addTeamMember(member).subscribe(() => {
       this.loadMembers();
       this.name = '';
-      this.showSuccess();
+      this.showSuccess('Team member added!');
     });
   }
 
@@ -59,27 +61,81 @@ export class TeamComponent implements OnInit {
 
     this.api.updateMember(updatedMember).subscribe(() => {
       this.loadMembers();
+      this.updateActiveUserName(updatedMember.id, updated.trim());
+      this.showSuccess('Team member updated.');
     });
   }
 
   makeLead(member: TeamMember) {
     this.api.makeLead(member.id).subscribe(() => {
       this.loadMembers();
+      this.updateActiveUserLead(member.id);
+      this.showSuccess('Team lead updated.');
     });
   }
 
   deactivate(member: TeamMember) {
+    if (member.isTeamLead) {
+      return;
+    }
+
     this.api.deactivateMember(member.id).subscribe(() => {
       this.loadMembers();
+      this.removeInactiveUserFromActiveSelection(member.id);
+      this.showSuccess('Team member deactivated.');
     });
   }
 
-  showSuccess() {
+  closeToast() {
+    this.showToast = false;
+  }
+
+  showSuccess(message: string) {
+    this.toastMessage = message;
     this.showToast = true;
     setTimeout(() => this.showToast = false, 2000);
   }
 
   get activeMembers() {
     return this.members.filter(m => m.isActive);
+  }
+
+  private syncTeamMembersToLocalStorage() {
+    const localMembers = this.activeMembers.map(member => ({
+      id: member.id,
+      name: member.name,
+      isTeamLead: member.isTeamLead
+    }));
+    localStorage.setItem('teamMembers', JSON.stringify(localMembers));
+  }
+
+  private updateActiveUserName(memberId: string, newName: string) {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (!activeUserRaw) return;
+
+    const activeUser = JSON.parse(activeUserRaw);
+    if (activeUser.id === memberId) {
+      activeUser.name = newName;
+      localStorage.setItem('activeUser', JSON.stringify(activeUser));
+    }
+  }
+
+  private updateActiveUserLead(newLeadId: string) {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (!activeUserRaw) return;
+
+    const activeUser = JSON.parse(activeUserRaw);
+    activeUser.isTeamLead = activeUser.id === newLeadId;
+    localStorage.setItem('activeUser', JSON.stringify(activeUser));
+  }
+
+  private removeInactiveUserFromActiveSelection(memberId: string) {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (!activeUserRaw) return;
+
+    const activeUser = JSON.parse(activeUserRaw);
+    if (activeUser.id === memberId) {
+      localStorage.removeItem('activeUser');
+    }
   }
 }

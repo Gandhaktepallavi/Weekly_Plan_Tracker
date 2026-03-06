@@ -22,3 +22,127 @@
 .footer .danger {
   background: #ef4444;
 }
+
+.toast {
+  position: fixed;
+  top: 92px;
+  right: 24px;
+  z-index: 1200;
+  background: #d1fae5;
+  color: #1f2937;
+  border-left: 4px solid #10b981;
+  border-radius: 8px;
+  min-width: 300px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+.toast-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #4b5563;
+  font-size: 16px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+}
+
+.modal {
+  width: min(620px, calc(100vw - 24px));
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 18px 20px;
+}
+
+.modal-body p {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.modal-actions {
+  padding: 0 20px 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.soft {
+  opacity: 0.85;
+}
+
+.modal-actions .primary {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.modal-actions .primary:hover {
+  background: #1d4ed8;
+}
+
+.modal-actions .danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.modal-actions button {
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

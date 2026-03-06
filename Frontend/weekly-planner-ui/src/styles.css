@@ -1,1 +1,109 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --app-bg: #0f172a;
+  --app-bg-soft: #1e293b;
+  --app-bg-card: #111827;
+  --app-text: #e2e8f0;
+  --app-text-muted: #94a3b8;
+  --app-border: #334155;
+  --app-nav-bg: #2c4464;
+  --app-footer-bg: #1e293b;
+  --app-btn-bg: #334155;
+  --app-btn-text: #ffffff;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.light-theme {
+  --app-bg: #f3f7ff;
+  --app-bg-soft: #ffffff;
+  --app-bg-card: #ffffff;
+  --app-text: #111827;
+  --app-text-muted: #475569;
+  --app-border: #d1d5db;
+  --app-nav-bg: #3b82f6;
+  --app-footer-bg: #e5e7eb;
+  --app-btn-bg: #ffffff;
+  --app-btn-text: #1f2937;
+}
+
+/* Shared top/bottom bars */
+.navbar {
+  background: var(--app-nav-bg) !important;
+}
+
+.footer {
+  background: var(--app-footer-bg) !important;
+}
+
+.footer button {
+  background: var(--app-btn-bg) !important;
+  color: var(--app-btn-text) !important;
+  border: 1px solid var(--app-border) !important;
+}
+
+.footer .danger {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+
+/* Main pages */
+.page,
+.history-page,
+.dashboard-container,
+.review-container,
+.container {
+  background: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+.banner {
+  background: #c4d3e8 !important;
+  color: #111827 !important;
+  border-color: #3b82f6 !important;
+}
+
+.card,
+.cardBtn,
+.item-card,
+.member-card,
+.form-card,
+.week-card {
+  background: var(--app-bg-card) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  background: var(--app-bg-soft);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+/* Light theme readability for specific controls */
+body.light-theme .home-btn,
+body.light-theme .back-btn {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+body.light-theme .right-section a,
+body.light-theme .logo,
+body.light-theme .toggle-btn {
+  color: #ffffff !important;
+}
+
+body.light-theme .cardDesc,
+body.light-theme .subtitle,
+body.light-theme .stats {
+  color: var(--app-text-muted) !important;
+}

@@ -1,11 +1,57 @@
 <footer class="footer">
-
-  <button>📥 Download My Data</button>
-  <button>📤 Load Data from File</button>
-  <button>🌱 Seed Sample Data</button>
-
-  <button class="danger" (click)="resetApp()">
-    🗑 Reset App
-  </button>
-
+  <button (click)="downloadMyData()">Download My Data</button>
+  <button (click)="openLoadModal()">Load Data from File</button>
+  <button (click)="openSeedModal()">Seed Sample Data</button>
+  <button class="danger" (click)="resetApp()">Reset App</button>
 </footer>
+
+<div *ngIf="showLoadModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Load Data from a Backup File</h3>
+      <button class="icon-btn" type="button" (click)="closeLoadModal()">x</button>
+    </div>
+
+    <div class="modal-body">
+      <p>Pick the backup file you saved before. This will replace all your current data.</p>
+      <input type="file" accept=".json,application/json" (change)="onBackupFileSelected($event)" />
+      <div class="file-name" *ngIf="selectedBackupFileName">{{ selectedBackupFileName }}</div>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        class="danger soft"
+        type="button"
+        [disabled]="!selectedBackupFile || isImporting"
+        (click)="loadDataFromFile()">
+        Yes, Replace My Data
+      </button>
+      <button type="button" [disabled]="isImporting" (click)="closeLoadModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showSeedModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Seed Sample Data?</h3>
+      <button class="icon-btn" type="button" (click)="closeSeedModal()">x</button>
+    </div>
+
+    <div class="modal-body">
+      <p>This will add sample team members, backlog items, and a planning cycle. Existing data will not be erased.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="primary" type="button" [disabled]="isImporting" (click)="seedSampleData()">
+        Yes, Load Sample Data
+      </button>
+      <button type="button" [disabled]="isImporting" (click)="closeSeedModal()">No, Go Back</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showToast" class="toast">
+  <span>{{ toastMessage }}</span>
+  <button type="button" class="toast-close" (click)="closeToast()">x</button>
+</div>

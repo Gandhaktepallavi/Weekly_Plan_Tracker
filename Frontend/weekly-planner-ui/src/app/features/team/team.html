@@ -1,51 +1,34 @@
-
 <div class="container">
-
-  <button class="home-btn" routerLink="/dashboard">← Home</button>
+  <button class="home-btn" routerLink="/home">? Home</button>
 
   <h2>Manage Team Members</h2>
 
-  <!-- Add Member -->
   <div class="input-row">
-    <input type="text"
-           placeholder="Type a name"
-           [(ngModel)]="name">
-
-    <button (click)="addMember()">
-      Save This Person
-    </button>
+    <input type="text" placeholder="Type a name" [(ngModel)]="name" />
+    <button (click)="addMember()">Save This Person</button>
   </div>
 
-  <!-- Members List -->
   <div *ngFor="let member of activeMembers" class="member-card">
-
     <div>
       <strong>{{ member.name }}</strong>
-
-      <span *ngIf="member.isLead" class="lead-badge">
-        Lead
-      </span>
+      <span *ngIf="member.isTeamLead" class="lead-badge">Lead</span>
     </div>
 
     <div class="actions">
       <button (click)="editName(member)">Edit Name</button>
 
-      <button *ngIf="!member.isLead"
-              (click)="makeLead(member)">
+      <button *ngIf="!member.isTeamLead" (click)="makeLead(member)">
         Make Lead
       </button>
 
-      <button class="danger"
-              (click)="deactivate(member)">
+      <button class="danger" *ngIf="!member.isTeamLead" (click)="deactivate(member)">
         Deactivate
       </button>
     </div>
-
   </div>
 
-  <!-- Toast -->
   <div *ngIf="showToast" class="toast">
-    Team member added!
+    <span>{{ toastMessage }}</span>
+    <button class="toast-close" type="button" (click)="closeToast()">x</button>
   </div>
-
 </div>

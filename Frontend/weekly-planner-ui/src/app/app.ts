@@ -23,7 +23,8 @@ import { FooterComponent } from './shared/footer/footer';
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: #0f172a;
+      background: var(--app-bg);
+      color: var(--app-text);
     }
 
     .content {
