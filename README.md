@@ -4,6 +4,18 @@ A full-stack **Weekly Planning and Progress Tracking System** built using **.NET
 The application allows teams to manage backlog items, plan weekly work, track progress, and provide a dashboard view for team leads.
 
 ---
+🌐 Live Application
+
+Frontend deployed on Azure Static Web Apps
+
+https://red-smoke-049fbad1e.2.azurestaticapps.net
+
+📦 GitHub Repository
+
+https://github.com/Gandhaktepallavi/Weekly_Plan_Tracker
+
+
+---
 
 ## Project Overview
 

@@ -43,7 +43,10 @@ public class TeamMemberService : ITeamMemberService
         member.CreatedAt = DateTime.UtcNow;
         
         // If this is the first member, make them team lead
-        if (!_context.TeamMembers.Any())
+        var firstMemberId = _context.TeamMembers
+            .Select(tm => tm.Id)
+            .FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(firstMemberId))
         {
             member.IsTeamLead = true;
         }

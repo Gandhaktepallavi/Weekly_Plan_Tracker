@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using WeeklyPlanner.Domain.Entities;
 using WeeklyPlanner.Infrastructure;
 
@@ -14,6 +15,17 @@ namespace WeeklyPlanner.Api.Controllers
         public WeeklyPlanController(WeeklyPlannerDbContext context)
         {
             _context = context;
+        }
+
+        public class OpenPlanningRequest
+        {
+            public DateTime PlanningDate { get; set; }
+            public List<string> SelectedMemberIds { get; set; } = new();
+            public double ClientPercent { get; set; }
+            public double TechDebtPercent { get; set; }
+            public double RnDPercent { get; set; }
+            public string? LeadUserId { get; set; }
+            public string? LeadUserName { get; set; }
         }
 
         // GET: api/weeklyplan/current
@@ -53,6 +65,92 @@ namespace WeeklyPlanner.Api.Controllers
             return CreatedAtAction(nameof(GetCurrentWeeklyPlan), plan);
         }
 
+        // POST: api/weeklyplan/open
+        [HttpPost("open")]
+        public async Task<ActionResult<WeeklyPlan>> OpenPlanning([FromBody] OpenPlanningRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Invalid request.");
+            }
+
+            if (request.PlanningDate == default)
+            {
+                return BadRequest("Planning date is required.");
+            }
+
+            if (request.PlanningDate.DayOfWeek != DayOfWeek.Tuesday)
+            {
+                return BadRequest("Planning must be opened on Tuesday.");
+            }
+
+            if (request.SelectedMemberIds == null || request.SelectedMemberIds.Count == 0)
+            {
+                return BadRequest("At least one team member must be selected.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.LeadUserId))
+            {
+                return BadRequest("Lead user is required.");
+            }
+
+            var isTeamLead = await _context.TeamMembers
+                .Where(t => t.Id == request.LeadUserId && t.IsActive)
+                .Select(t => t.IsTeamLead)
+                .FirstOrDefaultAsync();
+
+            if (!isTeamLead)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Only Team Lead can set the weekly plan.");
+            }
+
+            var totalPercent = request.ClientPercent + request.TechDebtPercent + request.RnDPercent;
+            if (Math.Abs(totalPercent - 100) > 0.01)
+            {
+                return BadRequest("Category percentages must total 100%.");
+            }
+
+            var weekStart = request.PlanningDate.Date.AddDays(1); // Wednesday
+            var existingOpenId = await _context.WeeklyPlans
+                .Where(p => p.WeekStart.Date == weekStart.Date && !p.IsFrozen)
+                .Select(p => p.Id)
+                .FirstOrDefaultAsync();
+
+            if (!string.IsNullOrWhiteSpace(existingOpenId))
+            {
+                return Conflict("A planning cycle is already open for this week.");
+            }
+
+            var leadName = request.LeadUserName;
+            if (string.IsNullOrWhiteSpace(leadName))
+            {
+                leadName = await _context.TeamMembers
+                    .Where(t => t.IsTeamLead && t.IsActive)
+                    .Select(t => t.Name)
+                    .FirstOrDefaultAsync() ?? "Team Lead";
+            }
+
+            var plan = new WeeklyPlan
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = leadName,
+                WeekStart = weekStart,
+                TotalHours = request.SelectedMemberIds.Count * 30,
+                IsFrozen = false,
+                CategoryAllocations = new List<CategoryAllocation>
+                {
+                    new() { Category = CategoryType.Client, Percentage = request.ClientPercent },
+                    new() { Category = CategoryType.TechDebt, Percentage = request.TechDebtPercent },
+                    new() { Category = CategoryType.RnD, Percentage = request.RnDPercent }
+                }
+            };
+
+            _context.WeeklyPlans.Add(plan);
+            await _context.SaveChangesAsync();
+
+            return Ok(plan);
+        }
+
         // PUT: api/weeklyplan/{id}/freeze
         [HttpPut("{id}/freeze")]
         public async Task<IActionResult> FreezePlan(string id)
@@ -73,9 +171,12 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpGet("active-exists")]
         public async Task<IActionResult> HasActivePlan()
         {
-            var exists = await _context.WeeklyPlans.AnyAsync(p => !p.IsFrozen);
+            var openPlanId = await _context.WeeklyPlans
+                .Where(p => !p.IsFrozen)
+                .Select(p => p.Id)
+                .FirstOrDefaultAsync();
 
-            return Ok(exists);
+            return Ok(!string.IsNullOrWhiteSpace(openPlanId));
         }
 
         // GET: api/weeklyplan/profile
