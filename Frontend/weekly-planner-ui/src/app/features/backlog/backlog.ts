@@ -37,6 +37,7 @@ export class BacklogComponent implements OnInit {
   editingItem: BacklogItem | null = null;
   showToast = false;
   toastMessage = '';
+  private readonly backlogStorageKey = 'backlogItems';
 
   constructor(private api: PlannerApiService) {}
 
@@ -45,8 +46,14 @@ export class BacklogComponent implements OnInit {
   }
 
   loadBacklog() {
-    this.api.getBacklog().subscribe(data => {
-      this.backlog = data;
+    this.api.getBacklog().subscribe({
+      next: (data) => {
+        this.backlog = data ?? [];
+        this.persistBacklogToLocal();
+      },
+      error: () => {
+        this.backlog = this.loadBacklogFromLocal();
+      }
     });
   }
 
@@ -58,18 +65,39 @@ export class BacklogComponent implements OnInit {
   }
 
   addItem(newItem: { title: string; category: Category; estimatedHours: number }) {
-    this.api.addBacklogItem(newItem).subscribe(() => {
-      this.loadBacklog();
-      this.showSuccess('Backlog item saved!');
+    this.api.addBacklogItem(newItem).subscribe({
+      next: () => {
+        this.loadBacklog();
+        this.showSuccess('Backlog item saved!');
+      },
+      error: () => {
+        const localItem: BacklogItem = {
+          id: crypto.randomUUID(),
+          title: newItem.title,
+          category: newItem.category,
+          estimatedHours: Number(newItem.estimatedHours || 1),
+          isAssigned: false
+        };
+        this.backlog = [localItem, ...this.backlog];
+        this.persistBacklogToLocal();
+        this.showSuccess('Backlog item saved locally.');
+      }
     });
 
     this.showForm = false;
   }
 
   deleteItem(id: string) {
-    this.api.deleteBacklogItem(id).subscribe(() => {
-      this.loadBacklog();
-      this.showSuccess('Backlog item deleted.');
+    this.api.deleteBacklogItem(id).subscribe({
+      next: () => {
+        this.loadBacklog();
+        this.showSuccess('Backlog item deleted.');
+      },
+      error: () => {
+        this.backlog = this.backlog.filter(item => item.id !== id);
+        this.persistBacklogToLocal();
+        this.showSuccess('Backlog item deleted locally.');
+      }
     });
   }
 
@@ -102,10 +130,20 @@ export class BacklogComponent implements OnInit {
   }
 
   saveEdit(item: BacklogItem) {
-    this.api.updateBacklogItem(item).subscribe(() => {
-      this.editingItem = null;
-      this.loadBacklog();
-      this.showSuccess('Backlog item updated.');
+    this.api.updateBacklogItem(item).subscribe({
+      next: () => {
+        this.editingItem = null;
+        this.loadBacklog();
+        this.showSuccess('Backlog item updated.');
+      },
+      error: () => {
+        this.backlog = this.backlog.map(existing =>
+          existing.id === item.id ? { ...existing, ...item } : existing
+        );
+        this.persistBacklogToLocal();
+        this.editingItem = null;
+        this.showSuccess('Backlog item updated locally.');
+      }
     });
   }
 
@@ -113,6 +151,22 @@ export class BacklogComponent implements OnInit {
     this.toastMessage = message;
     this.showToast = true;
     setTimeout(() => this.showToast = false, 2500);
+  }
+
+  private persistBacklogToLocal() {
+    localStorage.setItem(this.backlogStorageKey, JSON.stringify(this.backlog));
+  }
+
+  private loadBacklogFromLocal(): BacklogItem[] {
+    const raw = localStorage.getItem(this.backlogStorageKey);
+    if (!raw) return [];
+
+    try {
+      const parsed = JSON.parse(raw) as BacklogItem[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 
 }

@@ -2,26 +2,20 @@
   No backlog items found.
 </div>
 
-<table *ngIf="items.length > 0" class="backlog-table">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Category</th>
-      <th>Estimated Hours</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of items">
-      <td>{{ item.title }}</td>
-      <td>
+<div *ngIf="items.length > 0" class="backlog-list">
+  <div class="backlog-row" *ngFor="let item of items">
+    <div class="row-left">
+      <div class="row-title">{{ item.title }}</div>
+      <div class="row-meta">
         <span class="badge" [ngClass]="item.category.replace(' ', '-')">{{ item.category }}</span>
-      </td>
-      <td>{{ item.estimatedHours }}</td>
-      <td class="actions">
-        <button type="button" (click)="onEdit(item)">Edit</button>
-        <button type="button" class="danger" (click)="onDelete(item.id)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <span class="state-badge">{{ item.isAssigned ? 'ASSIGNED' : 'AVAILABLE' }}</span>
+        <span class="hours">{{ item.estimatedHours }}h est.</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="onEdit(item)">View &amp; Edit</button>
+      <button type="button" class="danger" (click)="onDelete(item.id)">Delete</button>
+    </div>
+  </div>
+</div>
