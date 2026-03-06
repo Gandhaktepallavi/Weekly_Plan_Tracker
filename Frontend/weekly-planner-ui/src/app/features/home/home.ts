@@ -18,7 +18,9 @@ interface TeamMember {
 })
 export class HomeComponent implements OnInit {
   teamLeadName: string = '';
-    hasActivePlan: boolean = false;
+  hasActivePlan: boolean = false;
+
+  constructor(private api: PlannerApiService) {}
 
 
   ngOnInit() {
@@ -31,5 +33,10 @@ export class HomeComponent implements OnInit {
     if (lead) {
       this.teamLeadName = lead.name;
     }
+
+    this.api.getActivePlan().subscribe({
+      next: (exists) => this.hasActivePlan = !!exists,
+      error: () => this.hasActivePlan = false
+    });
   }
 }

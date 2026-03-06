@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
  
 interface TeamMember {
   id: string;
@@ -19,13 +19,16 @@ interface TeamMember {
 })
 export class TeamSetupComponent implements OnInit {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   name: string = '';
   members: TeamMember[] = [];
   selectedUserId: string = '';
+  isSwitchMode = false;
 
   ngOnInit() {
+    this.isSwitchMode = this.route.snapshot.queryParamMap.get('mode') === 'switch';
+
     const storedMembers = localStorage.getItem('teamMembers');
     if (storedMembers) {
       this.members = JSON.parse(storedMembers);

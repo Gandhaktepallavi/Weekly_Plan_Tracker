@@ -25,6 +25,8 @@ export class TeamComponent implements OnInit {
   name = '';
   showToast = false;
   toastMessage = '';
+  editingMemberId: string | null = null;
+  editNameValue = '';
 
   constructor(private api: PlannerApiService) {}
 
@@ -50,18 +52,31 @@ export class TeamComponent implements OnInit {
       this.loadMembers();
       this.name = '';
       this.showSuccess('Team member added!');
+    }, () => {
+      this.showSuccess('Failed to add team member. Check API connectivity.');
     });
   }
 
-  editName(member: TeamMember) {
-    const updated = prompt('Edit name:', member.name);
-    if (!updated) return;
+  startEdit(member: TeamMember) {
+    this.editingMemberId = member.id;
+    this.editNameValue = member.name;
+  }
 
-    const updatedMember = { ...member, name: updated };
+  cancelEdit() {
+    this.editingMemberId = null;
+    this.editNameValue = '';
+  }
+
+  saveEdit(member: TeamMember) {
+    const updatedName = this.editNameValue.trim();
+    if (!updatedName) return;
+
+    const updatedMember = { ...member, name: updatedName };
 
     this.api.updateMember(updatedMember).subscribe(() => {
       this.loadMembers();
-      this.updateActiveUserName(updatedMember.id, updated.trim());
+      this.updateActiveUserName(updatedMember.id, updatedName);
+      this.cancelEdit();
       this.showSuccess('Team member updated.');
     });
   }

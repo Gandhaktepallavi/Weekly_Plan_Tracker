@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/review']);
   }
   goToPlanning() {
-    this.router.navigate(['/planning']);
+    this.router.navigate(['/planning/new']);
   }
 
   goToBacklog() {

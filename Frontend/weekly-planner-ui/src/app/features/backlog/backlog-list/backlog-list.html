@@ -1,0 +1,27 @@
+<div *ngIf="items.length === 0" class="empty">
+  No backlog items found.
+</div>
+
+<table *ngIf="items.length > 0" class="backlog-table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Category</th>
+      <th>Estimated Hours</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of items">
+      <td>{{ item.title }}</td>
+      <td>
+        <span class="badge" [ngClass]="item.category.replace(' ', '-')">{{ item.category }}</span>
+      </td>
+      <td>{{ item.estimatedHours }}</td>
+      <td class="actions">
+        <button type="button" (click)="onEdit(item)">Edit</button>
+        <button type="button" class="danger" (click)="onDelete(item.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

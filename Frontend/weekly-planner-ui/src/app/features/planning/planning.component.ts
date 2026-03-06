@@ -33,12 +33,21 @@ export class PlanningComponent implements OnInit {
   rndPercent: number = 0;
 
   totalHours: number = 0;
+  validationError = '';
 
   ngOnInit() {
-    const stored = localStorage.getItem('teamMembers');
-    if (stored) {
-      this.teamMembers = JSON.parse(stored);
-    }
+    this.api.getTeamMembers().subscribe({
+      next: (members) => {
+        this.teamMembers = members ?? [];
+        localStorage.setItem('teamMembers', JSON.stringify(this.teamMembers));
+      },
+      error: () => {
+        const stored = localStorage.getItem('teamMembers');
+        if (stored) {
+          this.teamMembers = JSON.parse(stored);
+        }
+      }
+    });
   }
 
   // -------------------------
@@ -107,20 +116,43 @@ export class PlanningComponent implements OnInit {
   }
 
   openPlanning() {
-    if (!this.isValid) return;
+    this.validationError = '';
+    if (!this.isValid) {
+      this.validationError = 'Please pick Tuesday, choose members, and make percentages total 100%.';
+      return;
+    }
 
-    const planningData = {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    const activeUser = activeUserRaw ? JSON.parse(activeUserRaw) : null;
+
+    const request = {
       planningDate: this.planningDate,
-      workPeriod: this.workPeriod,
-      selectedMembers: this.selectedMembers,
+      selectedMemberIds: this.selectedMembers,
       clientPercent: this.clientPercent,
       techDebtPercent: this.techDebtPercent,
-      rndPercent: this.rndPercent,
-      isOpen: true,
+      rnDPercent: this.rndPercent,
+      leadUserId: activeUser?.id,
+      leadUserName: activeUser?.name
     };
 
-    localStorage.setItem('activePlanning', JSON.stringify(planningData));
-
-    this.router.navigate(['/dashboard']);
+    this.api.openPlanningCycle(request).subscribe({
+      next: (result) => {
+        const planningData = {
+          planningDate: this.planningDate,
+          workPeriod: this.workPeriod,
+          selectedMembers: this.selectedMembers,
+          clientPercent: this.clientPercent,
+          techDebtPercent: this.techDebtPercent,
+          rndPercent: this.rndPercent,
+          isOpen: true,
+          planId: result?.id
+        };
+        localStorage.setItem('activePlanning', JSON.stringify(planningData));
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        this.validationError = error?.error || 'Unable to open planning. Please check your inputs.';
+      }
+    });
   }
 }

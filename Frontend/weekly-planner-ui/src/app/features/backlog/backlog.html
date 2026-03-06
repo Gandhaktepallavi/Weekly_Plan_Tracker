@@ -5,19 +5,17 @@
 
   <button class="add-btn" (click)="toggleForm()">Add a New Backlog Item</button>
 
-  <div *ngIf="showForm" class="form-card">
-    <input type="text" placeholder="Title" [(ngModel)]="title" />
+  <app-backlog-create
+    *ngIf="showForm"
+    (create)="addItem($event)"
+    (cancel)="showForm = false">
+  </app-backlog-create>
 
-    <select [(ngModel)]="category">
-      <option>Client Focused</option>
-      <option>Tech Debt</option>
-      <option>R&D</option>
-    </select>
-
-    <input type="number" min="1" [(ngModel)]="estimatedHours" />
-
-    <button (click)="addItem()">Save</button>
-  </div>
+  <app-backlog-edit
+    [item]="editingItem"
+    (saveItem)="saveEdit($event)"
+    (cancel)="editingItem = null">
+  </app-backlog-edit>
 
   <div class="category-buttons">
     <button (click)="selectedCategory='Client Focused'" class="client" [class.active]="selectedCategory==='Client Focused'">
@@ -42,19 +40,11 @@
     <input type="text" placeholder="Search by title" [(ngModel)]="searchTerm" />
   </div>
 
-  <div *ngIf="filteredItems.length === 0" class="empty">No backlog items match your filters.</div>
-
-  <div *ngFor="let item of filteredItems" class="item-card">
-    <div class="title-row">
-      <strong>{{ item.title }}</strong>
-      <span class="badge" [ngClass]="item.category.replace(' ','-')">{{ item.category }}</span>
-      <span class="state-badge" *ngIf="!item.isAssigned">AVAILABLE</span>
-    </div>
-
-    <p>{{ item.estimatedHours }}h estimated</p>
-
-    <button class="delete" (click)="deleteItem(item.id)">Delete</button>
-  </div>
+  <app-backlog-list
+    [items]="filteredItems"
+    (edit)="openEdit($event)"
+    (remove)="deleteItem($event)">
+  </app-backlog-list>
 
   <div *ngIf="showToast" class="toast">
     <span>{{ toastMessage }}</span>

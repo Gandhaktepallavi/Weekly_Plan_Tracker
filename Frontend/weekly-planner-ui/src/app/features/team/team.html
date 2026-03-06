@@ -1,7 +1,7 @@
 <div class="container">
-  <button class="home-btn" routerLink="/home">? Home</button>
+  <button class="home-btn" routerLink="/home">← Home</button>
 
-  <h2>Manage Team Members</h2>
+  <h2><span class="title-highlight">Manage Team Members</span></h2>
 
   <div class="input-row">
     <input type="text" placeholder="Type a name" [(ngModel)]="name" />
@@ -10,12 +10,20 @@
 
   <div *ngFor="let member of activeMembers" class="member-card">
     <div>
-      <strong>{{ member.name }}</strong>
+      <strong class="member-name-text" *ngIf="editingMemberId !== member.id">{{ member.name }}</strong>
+      <input
+        *ngIf="editingMemberId === member.id"
+        class="edit-input"
+        type="text"
+        [(ngModel)]="editNameValue"
+      />
       <span *ngIf="member.isTeamLead" class="lead-badge">Lead</span>
     </div>
 
     <div class="actions">
-      <button (click)="editName(member)">Edit Name</button>
+      <button *ngIf="editingMemberId !== member.id" (click)="startEdit(member)">Edit Name</button>
+      <button *ngIf="editingMemberId === member.id" (click)="saveEdit(member)">Save</button>
+      <button *ngIf="editingMemberId === member.id" (click)="cancelEdit()">Cancel</button>
 
       <button *ngIf="!member.isTeamLead" (click)="makeLead(member)">
         Make Lead

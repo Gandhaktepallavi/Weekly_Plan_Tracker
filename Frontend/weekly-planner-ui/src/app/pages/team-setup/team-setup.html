@@ -1,5 +1,5 @@
 <div class="container">
-  <ng-container *ngIf="hasExistingMembers; else setupBlock">
+  <ng-container *ngIf="isSwitchMode && hasExistingMembers; else setupBlock">
     <h1>Who are you?</h1>
     <p class="subtitle">Click your name to get started.</p>
 
@@ -18,10 +18,8 @@
   </ng-container>
 
   <ng-template #setupBlock>
-    <h1>?? Welcome! Let's set up your team.</h1>
-    <p class="subtitle">
-      Add the people on your team. Pick one person as the Team Lead.
-    </p>
+    <h1><span class="title-highlight">?? Welcome! Let's set up your team.</span></h1>
+    <p class="subtitle"><span class="title-highlight">Add the people on your team. Pick one person as the Team Lead.</span></p>
 
     <div class="input-section">
       <input
@@ -44,12 +42,8 @@
       </div>
 
       <div class="member-actions">
-        <button (click)="setTeamLead(member.id)">
-          Make Lead
-        </button>
-        <button class="delete" (click)="removeMember(member.id)">
-          Remove
-        </button>
+        <button *ngIf="!member.isTeamLead" (click)="setTeamLead(member.id)">Make Lead</button>
+        <button class="delete" (click)="removeMember(member.id)">Remove</button>
       </div>
     </div>
 
@@ -57,7 +51,7 @@
       class="done-btn"
       [disabled]="!canProceed()"
       (click)="goToHome()">
-      Done - Go to Home Screen
+      Done — Go to Home Screen
     </button>
   </ng-template>
 </div>

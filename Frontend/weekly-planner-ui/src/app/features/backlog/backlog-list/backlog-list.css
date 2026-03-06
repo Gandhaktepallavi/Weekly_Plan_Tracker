@@ -1,0 +1,65 @@
+.backlog-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.backlog-table th,
+.backlog-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px;
+  text-align: left;
+}
+
+.backlog-table th {
+  background: #e2e8f0;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.actions .danger {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.Client-Focused {
+  background: #3b82f6;
+}
+
+.Tech-Debt {
+  background: #f97316;
+}
+
+.R\&D {
+  background: #22c55e;
+}
+
+.empty {
+  background: #334155;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}

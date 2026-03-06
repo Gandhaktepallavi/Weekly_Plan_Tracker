@@ -1,12 +1,10 @@
 import { Routes } from '@angular/router';
-import { BacklogComponent } from './features/backlog/backlog';
 import { TeamSetupComponent } from './pages/team-setup/team-setup';
 import { HomeComponent } from './features/home/home';
 
 export const routes: Routes = [
   { path: '', component: TeamSetupComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'backlog', component: BacklogComponent },
   {
   path: 'planning/new',
   loadComponent: () =>

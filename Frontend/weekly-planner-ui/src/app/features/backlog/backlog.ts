@@ -5,11 +5,21 @@ import { RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 import { BacklogItem } from '../../shared/models/backlog-item';
 import { Category } from '../../shared/models/backlog-item';
+import { BacklogListComponent } from './backlog-list/backlog-list';
+import { BacklogCreateComponent } from './backlog-create/backlog-create';
+import { BacklogEditComponent } from './backlog-edit/backlog-edit';
 
 @Component({
   selector: 'app-backlog',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    BacklogListComponent,
+    BacklogCreateComponent,
+    BacklogEditComponent
+  ],
   templateUrl: './backlog.html',
   styleUrls: ['./backlog.css'],
 })
@@ -24,9 +34,7 @@ export class BacklogComponent implements OnInit {
 
   // form
   showForm = false;
-  title = '';
-  category: Category = 'Client Focused';
-  estimatedHours = 1;
+  editingItem: BacklogItem | null = null;
   showToast = false;
   toastMessage = '';
 
@@ -44,30 +52,18 @@ export class BacklogComponent implements OnInit {
 
   toggleForm() {
     this.showForm = !this.showForm;
-    this.resetForm();
+    if (this.showForm) {
+      this.editingItem = null;
+    }
   }
 
-  addItem() {
-    if (!this.title.trim()) return;
-
-    const newItem = {
-      title: this.title,
-      category: this.category,
-      estimatedHours: this.estimatedHours
-    };
-
+  addItem(newItem: { title: string; category: Category; estimatedHours: number }) {
     this.api.addBacklogItem(newItem).subscribe(() => {
       this.loadBacklog();
       this.showSuccess('Backlog item saved!');
     });
 
-    this.toggleForm();
-  }
-
-  resetForm() {
-    this.title = '';
-    this.category = 'Client Focused';
-    this.estimatedHours = 1;
+    this.showForm = false;
   }
 
   deleteItem(id: string) {
@@ -98,6 +94,19 @@ export class BacklogComponent implements OnInit {
 
   closeToast() {
     this.showToast = false;
+  }
+
+  openEdit(item: BacklogItem) {
+    this.editingItem = item;
+    this.showForm = false;
+  }
+
+  saveEdit(item: BacklogItem) {
+    this.api.updateBacklogItem(item).subscribe(() => {
+      this.editingItem = null;
+      this.loadBacklog();
+      this.showSuccess('Backlog item updated.');
+    });
   }
 
   private showSuccess(message: string) {
