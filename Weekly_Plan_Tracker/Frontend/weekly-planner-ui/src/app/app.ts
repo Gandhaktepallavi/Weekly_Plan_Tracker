@@ -22,12 +22,11 @@ import { FooterComponent } from './shared/footer/footer';
     .layout {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
       background: #0f172a;
     }
 
     .content {
-      flex: 1;
+      flex: 0 0 auto;
     }
   `]
 })

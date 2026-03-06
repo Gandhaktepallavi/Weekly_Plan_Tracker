@@ -18,10 +18,7 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDashboard()
         {
-            // Get current week's plan
-            var today = DateTime.Today;
-            var daysToTuesday = ((int)DayOfWeek.Tuesday - (int)today.DayOfWeek + 7) % 7;
-            var tuesday = today.AddDays(daysToTuesday);
+            var tuesday = GetPlanningWeekTuesday(DateTime.Today);
 
             var currentPlan = await _context.WeeklyPlans
                 .Include(w => w.TaskAssignments)
@@ -41,7 +38,6 @@ namespace WeeklyPlanner.Api.Controllers
                 });
             }
 
-            // Get member-wise progress
             var memberProgress = currentPlan.TaskAssignments
                 .GroupBy(t => new { t.TeamMemberId, t.TeamMember?.Name })
                 .Select(g => new
@@ -54,22 +50,15 @@ namespace WeeklyPlanner.Api.Controllers
                 })
                 .ToList();
 
-            // Get category-wise progress
             var categoryProgress = currentPlan.TaskAssignments
-                .GroupJoin(
-                    _context.BacklogItems,
-                    t => t.BacklogItemId,
-                    b => b.Id,
-                    (t, backlogItems) => new { Task = t, BacklogItems = backlogItems.DefaultIfEmpty() }
-                )
-                .SelectMany(x => x.BacklogItems.Select(b => new { x.Task, BacklogItem = b }))
-                .GroupBy(x => x.BacklogItem?.Category)
+                .Where(t => t.BacklogItem is not null)
+                .GroupBy(t => t.BacklogItem!.Category)
                 .Select(g => new
                 {
-                    category = g.Key?.ToString() ?? "Unknown",
-                    totalHours = g.Sum(x => x.Task.AssignedHours),
+                    category = g.Key.ToString(),
+                    totalHours = g.Sum(x => x.AssignedHours),
                     taskCount = g.Count(),
-                    avgProgress = g.Average(x => x.Task.ProgressPercent)
+                    avgProgress = g.Average(x => x.ProgressPercent)
                 })
                 .ToList();
 
@@ -102,9 +91,7 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpGet("member/{memberId}")]
         public async Task<IActionResult> GetMemberProgress(string memberId)
         {
-            var today = DateTime.Today;
-            var daysToTuesday = ((int)DayOfWeek.Tuesday - (int)today.DayOfWeek + 7) % 7;
-            var tuesday = today.AddDays(daysToTuesday);
+            var tuesday = GetPlanningWeekTuesday(DateTime.Today);
 
             var currentPlan = await _context.WeeklyPlans
                 .Include(w => w.TaskAssignments)
@@ -156,6 +143,17 @@ namespace WeeklyPlanner.Api.Controllers
                 .ToListAsync();
 
             return Ok(plans);
+        }
+
+        private static DateTime GetPlanningWeekTuesday(DateTime date)
+        {
+            var resolvedDate = date.Date;
+            while (resolvedDate.DayOfWeek != DayOfWeek.Tuesday)
+            {
+                resolvedDate = resolvedDate.AddDays(-1);
+            }
+
+            return resolvedDate;
         }
     }
 }

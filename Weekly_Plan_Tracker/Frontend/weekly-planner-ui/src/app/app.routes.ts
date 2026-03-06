@@ -25,6 +25,12 @@ export const routes: Routes = [
         .then(m => m.ReviewComponent)
   },
   {
+    path: 'past-weeks',
+    loadComponent: () =>
+      import('./features/past-weeks/past-weeks')
+        .then(m => m.PastWeeksComponent)
+  },
+  {
     path: 'backlog',
     loadComponent: () =>
       import('./features/backlog/backlog')

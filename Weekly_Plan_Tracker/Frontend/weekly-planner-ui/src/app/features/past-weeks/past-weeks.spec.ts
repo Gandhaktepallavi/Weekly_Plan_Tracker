@@ -2,30 +2,30 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
+import { PastWeeksComponent } from './past-weeks';
 
-import { NavbarComponent } from './navbar';
-
-describe('NavbarComponent', () => {
-  let component: NavbarComponent;
-  let fixture: ComponentFixture<NavbarComponent>;
+describe('PastWeeksComponent', () => {
+  let component: PastWeeksComponent;
+  let fixture: ComponentFixture<PastWeeksComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavbarComponent],
+      imports: [PastWeeksComponent],
       providers: [
         provideRouter([]),
         {
           provide: PlannerApiService,
           useValue: {
-            getTeamMembers: () => of([])
+            getPastWeeks: () => of([]),
+            getTasksByPlan: () => of([])
           }
         }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(NavbarComponent);
+    fixture = TestBed.createComponent(PastWeeksComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

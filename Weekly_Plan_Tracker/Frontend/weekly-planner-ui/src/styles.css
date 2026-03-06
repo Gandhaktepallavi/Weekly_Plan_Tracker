@@ -1,1 +1,166 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.dark-theme {
+  --bg-main: #0b1220;
+  --bg-surface: #111827;
+  --bg-surface-2: #1e293b;
+  --bg-nav: #2c4464;
+  --bg-muted: #c9d7ea;
+  --text-main: #e5e7eb;
+  --text-soft: #94a3b8;
+  --border-main: #243041;
+  --button-main: #2563eb;
+  --button-danger: #dc2626;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+body.light-theme {
+  --bg-main: #f3f6fb;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #eef3fb;
+  --bg-nav: #1f4ba3;
+  --bg-muted: #e4edf8;
+  --text-main: #0f172a;
+  --text-soft: #475569;
+  --border-main: #cbd5e1;
+  --button-main: #1d4ed8;
+  --button-danger: #dc2626;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+body.dark-theme .navbar,
+body.light-theme .navbar {
+  background: var(--bg-nav) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .logo,
+body.light-theme .logo,
+body.dark-theme .right-section a,
+body.light-theme .right-section a,
+body.dark-theme .toggle-btn,
+body.light-theme .toggle-btn {
+  color: #ffffff !important;
+}
+
+body.dark-theme .page,
+body.light-theme .page,
+body.dark-theme .dashboard-container,
+body.light-theme .dashboard-container,
+body.dark-theme .review-container,
+body.light-theme .review-container,
+body.dark-theme .past-weeks-page,
+body.light-theme .past-weeks-page,
+body.dark-theme .container,
+body.light-theme .container {
+  background: var(--bg-main) !important;
+  color: var(--text-main) !important;
+}
+
+body.dark-theme .card,
+body.light-theme .card,
+body.dark-theme .cardBtn,
+body.light-theme .cardBtn,
+body.dark-theme .member-card,
+body.light-theme .member-card,
+body.dark-theme .week-card,
+body.light-theme .week-card,
+body.dark-theme .item-card,
+body.light-theme .item-card,
+body.dark-theme .form-card,
+body.light-theme .form-card,
+body.dark-theme .footer,
+body.light-theme .footer {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
+}
+
+body.dark-theme .banner,
+body.light-theme .banner,
+body.dark-theme .info,
+body.light-theme .info,
+body.dark-theme .error-box,
+body.light-theme .error-box {
+  background: var(--bg-muted) !important;
+  color: #0f172a !important;
+}
+
+body.dark-theme input,
+body.light-theme input,
+body.dark-theme select,
+body.light-theme select,
+body.dark-theme textarea,
+body.light-theme textarea {
+  background: var(--bg-surface-2) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-main) !important;
+}
+
+body.dark-theme button,
+body.light-theme button {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.dark-theme .home-btn,
+body.light-theme .home-btn,
+body.dark-theme .back-btn,
+body.light-theme .back-btn,
+body.dark-theme .add-btn,
+body.light-theme .add-btn,
+body.dark-theme .week-card button,
+body.light-theme .week-card button,
+body.dark-theme .done-btn,
+body.light-theme .done-btn {
+  background: var(--button-main) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .danger,
+body.light-theme .danger,
+body.dark-theme .cancel,
+body.light-theme .cancel,
+body.dark-theme .footer .danger,
+body.light-theme .footer .danger {
+  background: var(--button-danger) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .modal,
+body.light-theme .modal {
+  background: var(--bg-surface) !important;
+  color: var(--text-main) !important;
+}
+
+body.dark-theme table,
+body.light-theme table {
+  background: var(--bg-surface) !important;
+  color: var(--text-main) !important;
+}
+
+body.dark-theme th,
+body.dark-theme td,
+body.light-theme th,
+body.light-theme td {
+  border-color: var(--border-main) !important;
+}
+
+/* Reduce extra whitespace above footer across pages */
+.layout .content > .page,
+.layout .content > .container,
+.layout .content > .dashboard-container,
+.layout .content > .review-container,
+.layout .content > .past-weeks-page,
+.layout .content > .team-setup-container {
+  min-height: auto !important;
+  padding-bottom: 12px !important;
+}

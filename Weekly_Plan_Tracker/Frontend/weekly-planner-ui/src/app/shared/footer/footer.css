@@ -22,3 +22,104 @@
 .footer .danger {
   background: #ef4444;
 }
+
+.footer .soft {
+  opacity: 0.85;
+}
+
+.primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.toast {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  z-index: 1000;
+  background: #d1fae5;
+  color: #1f2937;
+  border-left: 4px solid #10b981;
+  border-radius: 8px;
+  padding: 12px 14px;
+  min-width: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal {
+  width: min(620px, calc(100vw - 32px));
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  color: #475569;
+}
+
+.modal-body {
+  padding: 18px 20px;
+}
+
+.modal-body p {
+  margin: 0 0 14px;
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.modal-actions {
+  padding: 0 20px 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
   }
 
   goToPastWeeks() {
-    this.router.navigate(['/review']);
+    this.router.navigate(['/past-weeks']);
   }
 }
 

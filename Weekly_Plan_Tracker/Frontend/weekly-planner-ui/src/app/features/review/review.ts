@@ -70,6 +70,7 @@ export class ReviewComponent implements OnInit {
         }
 
         this.planning = {
+          id: data.planId,
           planningDate: data.weekStart,
           workPeriod: `${data.weekStart} to ${data.weekEnd}`,
           clientPercent: data.clientPercent,
@@ -111,8 +112,8 @@ export class ReviewComponent implements OnInit {
 
     this.categorySummary = categoriesList.map(c => {
       const budget = Math.round((c.percent / 100) * this.totalHours);
-      const catData = categories.find((cat: any) => 
-        cat.category?.toLowerCase() === c.name.toLowerCase().replace(' ', '').replace('&', '').toLowerCase()
+      const catData = categories.find((cat: any) =>
+        this.normalizeCategory(cat.category) === this.normalizeCategory(c.name)
       );
       const planned = catData?.totalHours || 0;
 
@@ -269,6 +270,22 @@ export class ReviewComponent implements OnInit {
       } else {
         this.router.navigate(['/home']);
       }
+    }
+  }
+
+  private normalizeCategory(category: string): string {
+    switch ((category || '').toLowerCase()) {
+      case 'client':
+      case 'client focused':
+        return 'client';
+      case 'techdebt':
+      case 'tech debt':
+        return 'techdebt';
+      case 'rnd':
+      case 'r&d':
+        return 'rnd';
+      default:
+        return category.toLowerCase().replaceAll(' ', '');
     }
   }
 }

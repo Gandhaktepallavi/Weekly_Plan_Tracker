@@ -95,7 +95,7 @@ export class PlanningComponent implements OnInit {
         if (plan && plan.id) {
           this.currentPlanId = plan.id;
           this.isPlanCreated = true;
-          this.planningDate = plan.weekStart;
+          this.planningDate = this.toInputDate(plan.weekStart);
           this.workPeriod = `${plan.weekStart} to ${plan.weekEnd}`;
           this.clientPercent = plan.clientPercent || 0;
           this.techDebtPercent = plan.techDebtPercent || 0;
@@ -235,6 +235,7 @@ export class PlanningComponent implements OnInit {
     this.error = '';
 
     const planData = {
+      id: this.currentPlanId,
       weekStart: this.planningDate,
       clientPercent: this.clientPercent,
       techDebtPercent: this.techDebtPercent,
@@ -246,8 +247,7 @@ export class PlanningComponent implements OnInit {
     if (this.isPlanCreated) {
       this.api.updateWeeklyPlan(this.currentPlanId, planData).subscribe({
         next: () => {
-          this.loading = false;
-          this.saveAllTasks();
+          this.replacePlanTasks();
         },
         error: (err) => {
           this.loading = false;
@@ -260,8 +260,7 @@ export class PlanningComponent implements OnInit {
         next: (plan: any) => {
           this.currentPlanId = plan.id;
           this.isPlanCreated = true;
-          this.loading = false;
-          this.saveAllTasks();
+          this.replacePlanTasks();
         },
         error: (err) => {
           this.loading = false;
@@ -272,25 +271,75 @@ export class PlanningComponent implements OnInit {
     }
   }
 
-  saveAllTasks() {
-    this.selectedMembers.forEach(memberId => {
-      const tasks = this.memberTasks.get(memberId) || [];
-      tasks.forEach(task => {
-        this.api.assignTask({
-          teamMemberId: memberId,
-          backlogItemId: task.backlogItemId,
-          weeklyPlanId: this.currentPlanId,
-          assignedHours: task.hours,
-          progressPercent: 0
-        }).subscribe({
-          next: () => console.log('Task assigned'),
-          error: (err) => console.error('Error assigning task:', err)
+  replacePlanTasks() {
+    this.api.getTasksByPlan(this.currentPlanId).subscribe({
+      next: (existingTasks: any[]) => {
+        if (existingTasks.length === 0) {
+          this.saveAllTasks();
+          return;
+        }
+
+        let deleted = 0;
+        existingTasks.forEach(task => {
+          this.api.deleteTask(task.id).subscribe({
+            next: () => {
+              deleted++;
+              if (deleted === existingTasks.length) {
+                this.saveAllTasks();
+              }
+            },
+            error: (err) => {
+              console.error('Error deleting existing task:', err);
+              this.loading = false;
+              this.error = 'Error updating plan tasks';
+            }
+          });
         });
-      });
+      },
+      error: (err) => {
+        console.error('Error loading existing tasks:', err);
+        this.loading = false;
+        this.error = 'Error updating plan tasks';
+      }
+    });
+  }
+
+  saveAllTasks() {
+    const tasksToCreate = this.selectedMembers.flatMap(memberId => {
+      const tasks = this.memberTasks.get(memberId) || [];
+      return tasks.map(task => ({
+        teamMemberId: memberId,
+        backlogItemId: task.backlogItemId,
+        weeklyPlanId: this.currentPlanId,
+        assignedHours: task.hours,
+        progressPercent: 0
+      }));
     });
 
-    alert('Plan saved successfully!');
-    this.router.navigate(['/dashboard']);
+    if (tasksToCreate.length === 0) {
+      this.loading = false;
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    let created = 0;
+    tasksToCreate.forEach(task => {
+      this.api.assignTask(task).subscribe({
+        next: () => {
+          created++;
+          if (created === tasksToCreate.length) {
+            this.loading = false;
+            alert('Plan saved successfully!');
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          console.error('Error assigning task:', err);
+          this.loading = false;
+          this.error = 'Error assigning one or more tasks';
+        }
+      });
+    });
   }
 
   // Check if planning is complete for all members
@@ -329,6 +378,14 @@ export class PlanningComponent implements OnInit {
       this.addTaskToMember(memberId, backlogItem, hours);
       this.selectedBacklogItem.delete(memberId);
     }
+  }
+
+  private toInputDate(value: string): string {
+    if (!value) {
+      return '';
+    }
+
+    return value.split('T')[0];
   }
 }
 

@@ -137,5 +137,17 @@ export class PlannerApiService {
   updateCategorySettings(settings: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/category-settings`, settings);
   }
+
+  importBackup(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backup/import`, payload);
+  }
+
+  seedSampleData(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backup/seed-sample`, {});
+  }
+
+  resetApp(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/backup/reset-all`, {});
+  }
 }
 

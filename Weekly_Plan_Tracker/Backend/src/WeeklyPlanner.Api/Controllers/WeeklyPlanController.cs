@@ -20,10 +20,7 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpGet("current")]
         public async Task<ActionResult<WeeklyPlan>> GetCurrentWeeklyPlan()
         {
-            var today = DateTime.Today;
-            // Get Tuesday of current week
-            var daysToTuesday = ((int)DayOfWeek.Tuesday - (int)today.DayOfWeek + 7) % 7;
-            var tuesday = today.AddDays(daysToTuesday);
+            var tuesday = GetPlanningWeekTuesday(DateTime.Today);
 
             var plan = await _context.WeeklyPlans
                 .Include(w => w.TaskAssignments)
@@ -51,9 +48,7 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpGet("active")]
         public async Task<IActionResult> GetActivePlan()
         {
-            var today = DateTime.Today;
-            var daysToTuesday = ((int)DayOfWeek.Tuesday - (int)today.DayOfWeek + 7) % 7;
-            var tuesday = today.AddDays(daysToTuesday);
+            var tuesday = GetPlanningWeekTuesday(DateTime.Today);
 
             var plan = await _context.WeeklyPlans
                 .FirstOrDefaultAsync(p => p.WeekStart.Date == tuesday.Date && !p.IsFrozen);
@@ -93,12 +88,17 @@ namespace WeeklyPlanner.Api.Controllers
         public async Task<ActionResult<WeeklyPlan>> CreateWeeklyPlan(WeeklyPlan plan)
         {
             plan.Id = Guid.NewGuid().ToString();
-            
-            // Calculate week start (Tuesday) and end (Monday)
-            var selectedDate = plan.WeekStart;
-            var daysToTuesday = ((int)DayOfWeek.Tuesday - (int)selectedDate.DayOfWeek + 7) % 7;
-            plan.WeekStart = selectedDate.AddDays(daysToTuesday);
+            plan.WeekStart = GetPlanningWeekTuesday(plan.WeekStart);
             plan.WeekEnd = plan.WeekStart.AddDays(6); // Monday
+            plan.SelectedMemberIds ??= new List<string>();
+
+            var existing = await _context.WeeklyPlans
+                .FirstOrDefaultAsync(p => p.WeekStart.Date == plan.WeekStart.Date);
+
+            if (existing is not null)
+            {
+                return Conflict("A weekly plan already exists for this planning week.");
+            }
 
             _context.WeeklyPlans.Add(plan);
             await _context.SaveChangesAsync();
@@ -110,12 +110,31 @@ namespace WeeklyPlanner.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWeeklyPlan(string id, WeeklyPlan plan)
         {
-            if (id != plan.Id)
+            if (!string.IsNullOrWhiteSpace(plan.Id) && id != plan.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(plan).State = EntityState.Modified;
+            var existing = await _context.WeeklyPlans
+                .Include(w => w.TaskAssignments)
+                .FirstOrDefaultAsync(w => w.Id == id);
+
+            if (existing is null)
+            {
+                return NotFound();
+            }
+
+            if (existing.IsFrozen)
+            {
+                return BadRequest("Frozen plans cannot be edited.");
+            }
+
+            existing.WeekStart = GetPlanningWeekTuesday(plan.WeekStart);
+            existing.WeekEnd = existing.WeekStart.AddDays(6);
+            existing.ClientPercent = plan.ClientPercent;
+            existing.TechDebtPercent = plan.TechDebtPercent;
+            existing.RndPercent = plan.RndPercent;
+            existing.SelectedMemberIds = plan.SelectedMemberIds ?? new List<string>();
 
             try
             {
@@ -139,6 +158,7 @@ namespace WeeklyPlanner.Api.Controllers
         {
             var plan = await _context.WeeklyPlans
                 .Include(w => w.TaskAssignments)
+                .ThenInclude(t => t.BacklogItem)
                 .FirstOrDefaultAsync(w => w.Id == id);
 
             if (plan == null)
@@ -146,23 +166,59 @@ namespace WeeklyPlanner.Api.Controllers
                 return NotFound();
             }
 
-            // Validation: Check if all members have 30 hours planned
-            var memberHours = plan.TaskAssignments
-                .GroupBy(t => t.TeamMemberId)
-                .Select(g => new { MemberId = g.Key, Hours = g.Sum(t => t.AssignedHours) })
+            // Validation: selected members must each have exactly 30 planned hours
+            var memberHours = plan.SelectedMemberIds
+                .Select(memberId => new
+                {
+                    MemberId = memberId,
+                    Hours = plan.TaskAssignments
+                        .Where(t => t.TeamMemberId == memberId)
+                        .Sum(t => t.AssignedHours)
+                })
                 .ToList();
 
-            var missingHours = memberHours.Where(m => m.Hours < 30).ToList();
-            if (missingHours.Any())
+            var invalidHours = memberHours.Where(m => m.Hours != 30).ToList();
+            if (invalidHours.Any())
             {
-                return BadRequest($"Cannot freeze: Some members have less than 30 hours planned. " +
-                    string.Join(", ", missingHours.Select(m => $"{m.MemberId}: {m.Hours}h")));
+                return BadRequest("Cannot freeze: Every selected member must have exactly 30 planned hours. " +
+                    string.Join(", ", invalidHours.Select(m => $"{m.MemberId}: {m.Hours}h")));
             }
 
             // Validate category percentages
             if (plan.ClientPercent + plan.TechDebtPercent + plan.RndPercent != 100)
             {
                 return BadRequest("Category percentages must add up to 100%");
+            }
+
+            var totalHours = plan.TaskAssignments.Sum(t => t.AssignedHours);
+            var expectedCategoryHours = new Dictionary<Category, int>
+            {
+                [Category.Client] = (int)Math.Round(totalHours * (plan.ClientPercent / 100.0), MidpointRounding.AwayFromZero),
+                [Category.TechDebt] = (int)Math.Round(totalHours * (plan.TechDebtPercent / 100.0), MidpointRounding.AwayFromZero),
+                [Category.RnD] = (int)Math.Round(totalHours * (plan.RndPercent / 100.0), MidpointRounding.AwayFromZero)
+            };
+
+            var actualCategoryHours = plan.TaskAssignments
+                .Where(t => t.BacklogItem is not null)
+                .GroupBy(t => t.BacklogItem!.Category)
+                .ToDictionary(g => g.Key, g => g.Sum(t => t.AssignedHours));
+
+            var categoryViolations = expectedCategoryHours
+                .Where(expected =>
+                {
+                    var actual = actualCategoryHours.GetValueOrDefault(expected.Key, 0);
+                    return actual != expected.Value;
+                })
+                .Select(expected =>
+                {
+                    var actual = actualCategoryHours.GetValueOrDefault(expected.Key, 0);
+                    return $"{expected.Key}: {actual}h/{expected.Value}h";
+                })
+                .ToList();
+
+            if (categoryViolations.Count > 0)
+            {
+                return BadRequest("Cannot freeze: Category hour allocation mismatch. " + string.Join(", ", categoryViolations));
             }
 
             plan.IsFrozen = true;
@@ -208,6 +264,17 @@ namespace WeeklyPlanner.Api.Controllers
         private bool WeeklyPlanExists(string id)
         {
             return _context.WeeklyPlans.Any(e => e.Id == id);
+        }
+
+        private static DateTime GetPlanningWeekTuesday(DateTime date)
+        {
+            var resolvedDate = date.Date;
+            while (resolvedDate.DayOfWeek != DayOfWeek.Tuesday)
+            {
+                resolvedDate = resolvedDate.AddDays(-1);
+            }
+
+            return resolvedDate;
         }
     }
 }
