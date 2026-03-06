@@ -27,12 +27,10 @@ export class TeamSetupComponent implements OnInit {
   isSwitchMode = false;
 
   ngOnInit() {
-    this.isSwitchMode = this.route.snapshot.queryParamMap.get('mode') === 'switch';
-
-    const storedMembers = localStorage.getItem('teamMembers');
-    if (storedMembers) {
-      this.members = JSON.parse(storedMembers);
-    }
+    this.route.queryParamMap.subscribe((params) => {
+      this.isSwitchMode = params.get('mode') === 'switch';
+      this.loadMembersFromStorage();
+    });
 
     const activeUserRaw = localStorage.getItem('activeUser');
     if (activeUserRaw) {
@@ -91,5 +89,10 @@ export class TeamSetupComponent implements OnInit {
     }
 
     this.router.navigate(['/planning/new']);
+  }
+
+  private loadMembersFromStorage() {
+    const storedMembers = localStorage.getItem('teamMembers');
+    this.members = storedMembers ? JSON.parse(storedMembers) : [];
   }
 }

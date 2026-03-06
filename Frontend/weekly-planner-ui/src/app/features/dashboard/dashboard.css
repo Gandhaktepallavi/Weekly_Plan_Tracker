@@ -1,56 +1,147 @@
 .dashboard-container {
-  background: #0f172a;
-  min-height: 100vh;
-  padding: 40px;
-  color: white;
+  background: #0b1220;
+  min-height: calc(100vh - 132px);
+  padding: 28px 40px 40px;
+  color: #f8fafc;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-.banner {
-  background: #bbf7d0;
-  color: #065f46;
-  padding: 12px 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
   position: relative;
 }
 
-.close {
+.dashboard-container h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+.greeting-row {
+  margin-top: 8px;
+  margin-bottom: 24px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+.role-chip {
+  border-radius: 999px;
+  background: #facc15;
+  color: #111827;
+  font-size: 13px;
+  padding: 4px 10px;
+  font-weight: 700;
+}
+
+.toast {
   position: absolute;
-  right: 15px;
+  right: 20px;
+  top: 18px;
+  background: #d1fae5;
+  color: #134e4a;
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  padding: 16px 44px 16px 16px;
+  min-width: 320px;
+  max-width: 420px;
+}
+
+.toast-text {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.toast-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  color: #4b5563;
   cursor: pointer;
+  font-size: 20px;
+  padding: 0;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1200px;
 }
 
 .card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #334155;
+  background: #e5e7eb;
+  color: #111827;
+  padding: 26px 28px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  border-color: #3b82f6;
+  transform: translateY(-2px);
+  border-color: #93c5fd;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.28);
+}
+
+.card h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.card p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
 }
 
 .cancel {
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  border-color: #dc2626;
 }
 
-.cancel:hover {
-  background: #7f1d1d;
-  color: white;
+.cancel h3 {
+  color: #dc2626;
+}
+
+@media (max-width: 900px) {
+  .dashboard-container {
+    padding: 20px 16px 28px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-container h1 {
+    font-size: 34px;
+  }
+
+  .greeting-row {
+    font-size: 18px;
+  }
+
+  .role-chip {
+    font-size: 12px;
+  }
+
+  .toast {
+    position: static;
+    min-width: auto;
+    margin-bottom: 16px;
+  }
+
+  .toast-text {
+    font-size: 16px;
+  }
+
+  .card h3 {
+    font-size: 18px;
+  }
+
+  .card p {
+    font-size: 14px;
+  }
 }

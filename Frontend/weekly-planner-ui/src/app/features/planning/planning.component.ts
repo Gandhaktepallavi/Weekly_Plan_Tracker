@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 
 interface TeamMember {
@@ -13,7 +13,7 @@ interface TeamMember {
 @Component({
   selector: 'app-planning',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './planning.html',
   styleUrls: ['./planning.css'],
 })
@@ -115,6 +115,22 @@ export class PlanningComponent implements OnInit {
     return this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
   }
 
+  private persistAndGoToDashboard(planId?: string) {
+    const planningData = {
+      planningDate: this.planningDate,
+      workPeriod: this.workPeriod,
+      selectedMembers: this.selectedMembers,
+      clientPercent: this.clientPercent,
+      techDebtPercent: this.techDebtPercent,
+      rndPercent: this.rndPercent,
+      isOpen: true,
+      planId: planId ?? null
+    };
+
+    localStorage.setItem('activePlanning', JSON.stringify(planningData));
+    this.router.navigate(['/dashboard']);
+  }
+
   openPlanning() {
     this.validationError = '';
     if (!this.isValid) {
@@ -124,6 +140,7 @@ export class PlanningComponent implements OnInit {
 
     const activeUserRaw = localStorage.getItem('activeUser');
     const activeUser = activeUserRaw ? JSON.parse(activeUserRaw) : null;
+    const lead = this.teamMembers.find(m => m.isTeamLead);
 
     const request = {
       planningDate: this.planningDate,
@@ -131,27 +148,18 @@ export class PlanningComponent implements OnInit {
       clientPercent: this.clientPercent,
       techDebtPercent: this.techDebtPercent,
       rnDPercent: this.rndPercent,
-      leadUserId: activeUser?.id,
-      leadUserName: activeUser?.name
+      leadUserId: activeUser?.id ?? lead?.id,
+      leadUserName: activeUser?.name ?? lead?.name
     };
 
     this.api.openPlanningCycle(request).subscribe({
       next: (result) => {
-        const planningData = {
-          planningDate: this.planningDate,
-          workPeriod: this.workPeriod,
-          selectedMembers: this.selectedMembers,
-          clientPercent: this.clientPercent,
-          techDebtPercent: this.techDebtPercent,
-          rndPercent: this.rndPercent,
-          isOpen: true,
-          planId: result?.id
-        };
-        localStorage.setItem('activePlanning', JSON.stringify(planningData));
-        this.router.navigate(['/dashboard']);
+        this.persistAndGoToDashboard(result?.id);
       },
       error: (error) => {
-        this.validationError = error?.error || 'Unable to open planning. Please check your inputs.';
+        const message = String(error?.error || '');
+        this.validationError = message || 'Unable to open planning in API. Continuing to dashboard.';
+        this.persistAndGoToDashboard();
       }
     });
   }

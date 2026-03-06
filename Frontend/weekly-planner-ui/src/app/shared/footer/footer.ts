@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { PlannerApiService } from '../../core/planner-api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
@@ -19,7 +20,10 @@ export class FooterComponent {
   selectedBackupFileName = '';
   isImporting = false;
 
-  constructor(private api: PlannerApiService) {}
+  constructor(
+    private api: PlannerApiService,
+    private router: Router
+  ) {}
 
   downloadMyData() {
     forkJoin({
@@ -131,11 +135,29 @@ export class FooterComponent {
     this.isImporting = true;
     this.api.seedSampleData().subscribe({
       next: () => {
-        this.seedLocalStorageMembers();
-        this.isImporting = false;
-        this.closeSeedModal();
-        this.openToast('Sample data loaded! Pick a person to get started.');
-        setTimeout(() => location.reload(), 1400);
+        this.api.getTeamMembers().subscribe({
+          next: (members) => {
+            if (members?.length) {
+              localStorage.setItem('teamMembers', JSON.stringify(members));
+            } else {
+              this.seedLocalStorageMembers();
+            }
+
+            localStorage.removeItem('activeUser');
+            this.isImporting = false;
+            this.closeSeedModal();
+            this.openToast('Sample data loaded! Pick a person to get started.');
+            this.router.navigate(['/'], { queryParams: { mode: 'switch' } });
+          },
+          error: () => {
+            this.seedLocalStorageMembers();
+            localStorage.removeItem('activeUser');
+            this.isImporting = false;
+            this.closeSeedModal();
+            this.openToast('Sample data loaded! Pick a person to get started.');
+            this.router.navigate(['/'], { queryParams: { mode: 'switch' } });
+          }
+        });
       },
       error: () => {
         this.isImporting = false;
@@ -178,12 +200,11 @@ export class FooterComponent {
       { id: crypto.randomUUID(), name: 'Dave Kim', isTeamLead: false }
     ];
 
-    const merged = [...existing];
-    for (const member of sample) {
-      const already = merged.some(m => (m.name || '').toLowerCase() === member.name.toLowerCase());
-      if (!already) {
-        merged.push(member);
-      }
+    const merged = [...sample];
+
+    for (const member of existing) {
+      const already = merged.some(m => (m.name || '').toLowerCase() === (member.name || '').toLowerCase());
+      if (!already) merged.push(member);
     }
 
     // keep one lead

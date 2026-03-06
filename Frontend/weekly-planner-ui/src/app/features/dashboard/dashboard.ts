@@ -12,7 +12,9 @@ import { PlannerApiService } from '../../core/planner-api';
 })
 export class DashboardComponent implements OnInit {
   dashboardData: any[] = [];
-  showBanner: boolean = true;
+  showBanner = true;
+  activeUserName = 'Team Lead';
+  activeUserRole = 'Team Lead';
 
   constructor(
     private api: PlannerApiService,
@@ -20,6 +22,13 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (activeUserRaw) {
+      const activeUser = JSON.parse(activeUserRaw);
+      this.activeUserName = activeUser?.name ?? this.activeUserName;
+      this.activeUserRole = activeUser?.isTeamLead ? 'Team Lead' : 'Team Member';
+    }
+
     this.api.getDashboard().subscribe((data: any) => {
       this.dashboardData = data;
     });
@@ -33,7 +42,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/review']);
   }
   goToPlanning() {
-    this.router.navigate(['/planning/new']);
+    this.router.navigate(['/plan-work']);
   }
 
   goToBacklog() {

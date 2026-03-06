@@ -18,6 +18,12 @@ export const routes: Routes = [
       .then(m => m.DashboardComponent)
 },
 {
+  path: 'plan-work',
+  loadComponent: () =>
+    import('./features/plan-work/plan-work')
+      .then(m => m.PlanWorkComponent)
+},
+{
   path: 'review',
   loadComponent: () =>
     import('./features/review/review')

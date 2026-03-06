@@ -1,62 +1,58 @@
-<div class="review-container">
+<div class="review-page">
+  <div class="container">
+    <button routerLink="/dashboard" class="back-btn">&larr; Home</button>
 
-  <button routerLink="/dashboard" class="back-btn">← Home</button>
+    <h2>Review and Freeze the Plan</h2>
 
-  <h2>Review the Team's Plan</h2>
+    <div class="summary-banner">
+      Team planned: <strong>{{ totalPlanned }}h</strong> of {{ totalExpected }}h expected.
+    </div>
 
-  <p>
-    Week of {{ planning.planningDate }}.
-    {{ planning.selectedMembers.length }} team members.
-    {{ totalHours }} total hours.
-  </p>
+    <div class="section">
+      <h3>Member Coverage</h3>
+      <div class="member-grid">
+        <div class="member-card" *ngFor="let m of memberSummary" [class.bad]="!m.isValid">
+          <div class="member-name">{{ m.name }}</div>
+          <div class="member-hours">{{ m.planned }} / {{ m.target }}h</div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Category Summary -->
-  <h3>Category Summary</h3>
+    <div class="section">
+      <h3>Category Allocation</h3>
+      <div class="cat-table">
+        <div class="cat-row header">
+          <div>Category</div>
+          <div>Budget</div>
+          <div>Planned</div>
+          <div>Status</div>
+        </div>
+        <div class="cat-row" *ngFor="let c of categorySummary" [class.bad]="!c.isValid">
+          <div>{{ c.name }}</div>
+          <div>{{ c.budget }}h</div>
+          <div>{{ c.planned }}h</div>
+          <div>{{ c.isValid ? 'OK' : ('Off by ' + c.diff + 'h') }}</div>
+        </div>
+      </div>
+    </div>
 
-  <table>
-    <tr>
-      <th>Category</th>
-      <th>Budget</th>
-      <th>Planned</th>
-      <th>Status</th>
-    </tr>
+    <div class="errors" *ngIf="errors.length > 0">
+      <h4>Cannot freeze yet</h4>
+      <ul>
+        <li *ngFor="let e of errors">{{ e }}</li>
+      </ul>
+    </div>
 
-    <tr *ngFor="let c of categorySummary">
-      <td>{{ c.name }}</td>
-      <td>{{ c.budget }}h</td>
-      <td>{{ c.planned }}h</td>
-      <td [class.error]="c.planned !== c.budget">
-        Off by {{ c.budget - c.planned }}h
-      </td>
-    </tr>
-  </table>
+    <div class="actions">
+      <button class="secondary" (click)="refreshReview()">Refresh</button>
+      <button class="primary" [disabled]="!canFreeze" (click)="freezePlan()">
+        {{ freezeInProgress ? 'Freezing...' : 'Freeze Plan' }}
+      </button>
+      <button class="secondary" (click)="backToDashboard()">Back to Dashboard</button>
+    </div>
 
-  <!-- Member Summary -->
-  <h3>Member Summary</h3>
-
-  <div *ngFor="let m of memberSummary" class="member-card">
-    {{ m.name }}
-    <span class="hours">
-      {{ m.planned }} / {{ m.target }}h
-    </span>
+    <div class="success" *ngIf="freezeMessage">
+      {{ freezeMessage }}
+    </div>
   </div>
-
-  <!-- Freeze Errors -->
-  <div *ngIf="errors.length > 0" class="error-box">
-    <h4>Can't freeze yet:</h4>
-    <ul>
-      <li *ngFor="let e of errors">{{ e }}</li>
-    </ul>
-  </div>
-
-  <button
-    [disabled]="errors.length > 0"
-    (click)="freezePlan()">
-    Freeze the Plan
-  </button>
-
-  <button class="cancel" (click)="cancelPlanning()">
-    Cancel Planning
-  </button>
-
 </div>
