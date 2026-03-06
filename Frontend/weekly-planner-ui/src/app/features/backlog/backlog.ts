@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 import { BacklogItem } from '../../shared/models/backlog-item';
 import { Category } from '../../shared/models/backlog-item';
@@ -8,7 +9,7 @@ import { Category } from '../../shared/models/backlog-item';
 @Component({
   selector: 'app-backlog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './backlog.html',
   styleUrls: ['./backlog.css'],
 })
@@ -26,6 +27,8 @@ export class BacklogComponent implements OnInit {
   title = '';
   category: Category = 'Client Focused';
   estimatedHours = 1;
+  showToast = false;
+  toastMessage = '';
 
   constructor(private api: PlannerApiService) {}
 
@@ -55,6 +58,7 @@ export class BacklogComponent implements OnInit {
 
     this.api.addBacklogItem(newItem).subscribe(() => {
       this.loadBacklog();
+      this.showSuccess('Backlog item saved!');
     });
 
     this.toggleForm();
@@ -69,6 +73,7 @@ export class BacklogComponent implements OnInit {
   deleteItem(id: string) {
     this.api.deleteBacklogItem(id).subscribe(() => {
       this.loadBacklog();
+      this.showSuccess('Backlog item deleted.');
     });
   }
 
@@ -89,6 +94,16 @@ export class BacklogComponent implements OnInit {
 
       return true;
     });
+  }
+
+  closeToast() {
+    this.showToast = false;
+  }
+
+  private showSuccess(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 2500);
   }
 
 }

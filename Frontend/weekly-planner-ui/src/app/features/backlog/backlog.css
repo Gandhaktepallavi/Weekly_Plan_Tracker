@@ -64,6 +64,7 @@ input, select {
 .filters-row {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   margin: 15px 0;
 }
 
@@ -85,6 +86,16 @@ input, select {
 .Tech-Debt { background: #f97316; }
 .R\&D { background: #22c55e; }
 
+.state-badge {
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-weight: 700;
+}
+
 .delete {
   background: #ef4444;
   border: none;
@@ -99,4 +110,28 @@ input, select {
   padding: 15px;
   border-radius: 8px;
   text-align: center;
+}
+
+.toast {
+  position: fixed;
+  top: 86px;
+  right: 20px;
+  background: #d1fae5;
+  color: #1f2937;
+  border-left: 4px solid #10b981;
+  border-radius: 8px;
+  min-width: 260px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 1200;
+}
+
+.toast-close {
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
 }

@@ -14,7 +14,6 @@ import { FooterComponent } from './shared/footer/footer';
       <div class="content">
         <router-outlet></router-outlet>
       </div>
-
       <app-footer></app-footer>
     </div>
   `,

@@ -17,6 +17,7 @@ export class PlannerApiService {
       map(items =>
         (items || []).map(item => ({
           ...item,
+          category: this.mapApiCategoryToUi(item.category),
           isAssigned: item.isAssigned ?? false
         } as BacklogItem))
       )
@@ -24,7 +25,18 @@ export class PlannerApiService {
   }
 
   addBacklogItem(item: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/backlog`, item);
+    const payload = {
+      ...item,
+      category: this.mapUiCategoryToApi(item.category)
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/backlog`, payload).pipe(
+      map(created => ({
+        ...created,
+        category: this.mapApiCategoryToUi(created.category),
+        isAssigned: created.isAssigned ?? false
+      }))
+    );
   }
 
   createBacklogItem(item: any): Observable<any> {
@@ -32,7 +44,12 @@ export class PlannerApiService {
   }
 
   updateBacklogItem(item: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/backlog/${item.id}`, item);
+    const payload = {
+      ...item,
+      category: this.mapUiCategoryToApi(item.category)
+    };
+
+    return this.http.put(`${this.apiUrl}/backlog/${item.id}`, payload);
   }
 
   deleteBacklogItem(id: string): Observable<void> {
@@ -131,5 +148,20 @@ export class PlannerApiService {
 
   seedSampleData(): Observable<any> {
     return this.http.post(`${this.apiUrl}/backup/seed-sample`, {});
+  }
+
+  private mapApiCategoryToUi(value: any): BacklogItem['category'] {
+    const normalized = String(value ?? '').toLowerCase().replace(/\s+/g, '');
+    if (normalized === 'client' || normalized === 'clientfocused') return 'Client Focused';
+    if (normalized === 'techdebt') return 'Tech Debt';
+    if (normalized === 'rnd' || normalized === 'r&d') return 'R&D';
+    return 'Client Focused';
+  }
+
+  private mapUiCategoryToApi(value: any): 'Client' | 'TechDebt' | 'RnD' {
+    const normalized = String(value ?? '').toLowerCase().replace(/\s+/g, '');
+    if (normalized === 'techdebt') return 'TechDebt';
+    if (normalized === 'r&d' || normalized === 'rnd') return 'RnD';
+    return 'Client';
   }
 }
