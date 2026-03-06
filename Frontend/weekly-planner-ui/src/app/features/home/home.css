@@ -23,6 +23,10 @@
   font-size: 0.8em;
   font-weight: 600;
 }
+.role-chip.member {
+  background: #38bdf8;
+  color: #082f49;
+}
 .banner {
   background: #0f274a;
   border: 1px solid #1e3a8a;

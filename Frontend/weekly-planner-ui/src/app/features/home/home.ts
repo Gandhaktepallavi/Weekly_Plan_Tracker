@@ -17,21 +17,29 @@ interface TeamMember {
   styleUrls: ['./home.css']     
 })
 export class HomeComponent implements OnInit {
-  teamLeadName: string = '';
-  hasActivePlan: boolean = false;
+  displayName = '';
+  isTeamLead = false;
+  hasActivePlan = false;
 
   constructor(private api: PlannerApiService) {}
 
 
   ngOnInit() {
-    const stored = localStorage.getItem('teamMembers');
-    if (!stored) return;
-
-    const members: TeamMember[] = JSON.parse(stored);
-    const lead = members.find(m => m.isTeamLead);
-
-    if (lead) {
-      this.teamLeadName = lead.name;
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (activeUserRaw) {
+      const activeUser = JSON.parse(activeUserRaw) as TeamMember;
+      this.displayName = activeUser?.name ?? '';
+      this.isTeamLead = !!activeUser?.isTeamLead;
+    } else {
+      const stored = localStorage.getItem('teamMembers');
+      if (stored) {
+        const members: TeamMember[] = JSON.parse(stored);
+        const lead = members.find(m => m.isTeamLead);
+        if (lead) {
+          this.displayName = lead.name;
+          this.isTeamLead = true;
+        }
+      }
     }
 
     this.api.getActivePlan().subscribe({
