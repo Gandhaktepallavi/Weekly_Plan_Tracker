@@ -88,5 +88,53 @@ namespace WeeklyPlanner.Api.Controllers
                 role = "Lead"
             });
         }
+
+        // GET: api/weeklyplan/past
+        [HttpGet("past")]
+        public async Task<IActionResult> GetPastWeeks()
+        {
+            var today = DateTime.Today;
+            var thisWeekStart = today.AddDays(-(int)today.DayOfWeek + 1);
+
+            var plans = await _context.WeeklyPlans
+                .Where(p => p.WeekStart.Date < thisWeekStart.Date)
+                .OrderByDescending(p => p.WeekStart)
+                .ToListAsync();
+
+            var result = new List<object>();
+            foreach (var plan in plans)
+            {
+                var tasks = await _context.PlannedTasks
+                    .Where(t => t.WeeklyPlanId == plan.Id)
+                    .ToListAsync();
+
+                var memberIds = tasks
+                    .Select(t => t.UserId)
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Distinct()
+                    .ToList();
+
+                var totalPlannedHours = tasks.Sum(t => t.PlannedHours);
+                var totalCompletedHours = tasks.Sum(t => t.CompletedHours);
+                var progressPercent = totalPlannedHours > 0
+                    ? (int)Math.Round((totalCompletedHours / totalPlannedHours) * 100)
+                    : 0;
+
+                result.Add(new
+                {
+                    plan.Id,
+                    plan.WeekStart,
+                    plan.IsFrozen,
+                    plan.TotalHours,
+                    TeamMembersCount = memberIds.Count,
+                    TaskCount = tasks.Count,
+                    TotalPlannedHours = totalPlannedHours,
+                    TotalCompletedHours = totalCompletedHours,
+                    ProgressPercent = progressPercent
+                });
+            }
+
+            return Ok(result);
+        }
     }
 }

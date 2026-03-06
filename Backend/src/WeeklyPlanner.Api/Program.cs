@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣ CORS
+// 1 CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 2️⃣ Controllers + Swagger
+// 2 Controllers + Swagger
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -27,11 +27,13 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3️⃣ Services
+// 3 Services
 builder.Services.AddScoped<IBacklogService, BacklogService>();
 builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
+builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+builder.Services.AddScoped<ICategorySettingsService, CategorySettingsService>();
 
-// 4️⃣ Cosmos DB configuration
+// 4 Cosmos DB configuration
 var cosmosEndpoint = builder.Configuration["Cosmos:AccountEndpoint"];
 var cosmosKey = builder.Configuration["Cosmos:AccountKey"];
 var cosmosDatabase = builder.Configuration["Cosmos:DatabaseName"];
@@ -45,12 +47,12 @@ builder.Services.AddDbContext<WeeklyPlannerDbContext>(options =>
 
 var app = builder.Build();
 
-// 5️⃣ Swagger
+// 5 Swagger
     app.UseSwagger();
     app.UseSwaggerUI();
 
 
-// 6️⃣ Middleware
+// 6 Middleware
 app.UseCors("AllowAngular");
 app.UseHttpsRedirection();
 
