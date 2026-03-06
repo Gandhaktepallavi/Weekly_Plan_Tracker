@@ -1,15 +1,15 @@
 <div class="navbar">
-  <a class="logo" routerLink="/home">?? Weekly Plan Tracker</a>
+  <a class="logo" routerLink="/home">📃Weekly Plan Tracker</a>
 
   <div class="right-section">
     <span class="user-pill">{{ userName }}</span>
     <span *ngIf="isLead" class="lead-badge">Lead</span>
 
-    <a routerLink="/" [queryParams]="{ mode: 'switch' }" class="switch-link">?? Switch</a>
-    <a routerLink="/home">?? Home</a>
+    <a routerLink="/" [queryParams]="{ mode: 'switch' }" class="switch-link">🔄️Switch</a>
+    <a routerLink="/home">🏠Home</a>
 
     <button class="toggle-btn" (click)="toggleTheme()">
-      {{ darkMode ? '? Light' : '?? Dark' }}
+      {{ darkMode ? '☀️Light' : '🌑Dark' }}
     </button>
   </div>
 </div>
