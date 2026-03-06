@@ -23,8 +23,7 @@ h2 {
 
 .title-highlight {
   display: inline-block;
-  background: #1d4ed8;
-  color: #ffffff;
+  color: #414f63;
   padding: 0 6px;
 }
 
@@ -77,7 +76,7 @@ input:focus {
 }
 
 .member-name-text {
-  color: #0f172a !important;
+  color: #515c76 !important;
   font-weight: 700;
 }
 

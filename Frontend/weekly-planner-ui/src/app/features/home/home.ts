@@ -18,8 +18,8 @@ interface TeamMember {
 })
 export class HomeComponent implements OnInit {
   displayName = '';
-  isTeamLead = false;
-  hasActivePlan = false;
+  isTeamLead = true;
+  hasActivePlan: boolean = false;
 
   constructor(private api: PlannerApiService) {}
 
