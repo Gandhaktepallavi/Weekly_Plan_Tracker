@@ -14,7 +14,6 @@ import { FooterComponent } from './shared/footer/footer';
       <div class="content">
         <router-outlet></router-outlet>
       </div>
-
       <app-footer></app-footer>
     </div>
   `,
@@ -23,7 +22,8 @@ import { FooterComponent } from './shared/footer/footer';
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: #0f172a;
+      background: var(--app-bg);
+      color: var(--app-text);
     }
 
     .content {

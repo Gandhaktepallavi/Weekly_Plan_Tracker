@@ -1,0 +1,63 @@
+<div class="plan-page">
+  <div class="container">
+    <button routerLink="/home" class="back-btn">&larr; Home</button>
+
+    <div class="toast" *ngIf="showToast">
+      <div class="toast-text">Planning is open! Team members can now plan their work.</div>
+      <button class="toast-close" (click)="showToast = false" aria-label="Close">x</button>
+    </div>
+
+    <h2>Plan My Work</h2>
+
+    <div class="hours-banner">
+      Your hours: <strong>{{ usedHours }}</strong> of 30 planned. {{ leftHours }} hours left.
+    </div>
+
+    <div class="category-grid">
+      <div class="category-card" *ngFor="let card of categoryCards">
+        <span class="cat-chip" [ngClass]="card.className">{{ card.name }}</span>
+        <div class="cat-line">Budget: <strong>{{ card.budget }}h</strong></div>
+        <div class="cat-line">Claimed: <strong>{{ card.claimed }}h</strong></div>
+        <div class="cat-line">Left: <strong>{{ card.left }}h</strong></div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="progressWidth(card)" [ngClass]="card.className"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="primary" (click)="togglePicker()">Add Work from Backlog</button>
+      <button class="secondary" (click)="donePlanning()">I'm Done Planning</button>
+    </div>
+
+    <div class="picker" *ngIf="showPicker">
+      <h4>Select Backlog Item</h4>
+      <div class="picker-fields">
+        <select [(ngModel)]="selectedBacklogId">
+          <option *ngFor="let item of backlog" [value]="item.id">
+            {{ item.title }} ({{ item.category }})
+          </option>
+        </select>
+        <input type="number" min="1" max="30" [(ngModel)]="plannedHoursInput" />
+        <button class="primary small" (click)="addSelectedWork()">Add</button>
+      </div>
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </div>
+
+    <h3>My Plan</h3>
+    <div class="empty-card" *ngIf="myPlan.length === 0">
+      You haven't picked any work yet. Click "Add Work from Backlog" to get started.
+    </div>
+
+    <div class="plan-list" *ngIf="myPlan.length > 0">
+      <div class="plan-item" *ngFor="let item of myPlan; let i = index">
+        <div class="item-main">
+          <div class="item-title">{{ item.title }}</div>
+          <div class="item-meta">{{ item.category }} - {{ item.plannedHours }}h</div>
+        </div>
+        <button class="remove-btn" (click)="removeItem(i)">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+

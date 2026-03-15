@@ -1,0 +1,32 @@
+<div class="history-page">
+  <div class="history-container">
+    <a class="home-btn" routerLink="/home">← Home</a>
+
+    <h2>Past Weeks</h2>
+
+    <div *ngIf="isLoading" class="banner">Loading past weeks...</div>
+
+    <div *ngIf="!isLoading && pastWeeks.length === 0" class="banner">
+      No past weeks yet.
+    </div>
+
+    <div *ngIf="!isLoading && pastWeeks.length > 0" class="weeks-list">
+      <div class="week-card" *ngFor="let week of pastWeeks">
+        <div class="week-header">
+          <h3>Week of {{ week.weekStart | date:'MMM d, y' }}</h3>
+          <span class="status" [class.frozen]="week.isFrozen">
+            {{ week.isFrozen ? 'Frozen' : 'Open' }}
+          </span>
+        </div>
+
+        <div class="stats">
+          <div>{{ week.teamMembersCount }} members</div>
+          <div>{{ week.taskCount }} tasks</div>
+          <div>{{ week.totalPlannedHours }}h planned</div>
+          <div>{{ week.totalCompletedHours }}h completed</div>
+          <div>{{ week.progressPercent }}% done</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

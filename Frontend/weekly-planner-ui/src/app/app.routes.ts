@@ -1,12 +1,10 @@
 import { Routes } from '@angular/router';
-import { BacklogComponent } from './features/backlog/backlog';
 import { TeamSetupComponent } from './pages/team-setup/team-setup';
 import { HomeComponent } from './features/home/home';
 
 export const routes: Routes = [
   { path: '', component: TeamSetupComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'backlog', component: BacklogComponent },
   {
   path: 'planning/new',
   loadComponent: () =>
@@ -20,10 +18,22 @@ export const routes: Routes = [
       .then(m => m.DashboardComponent)
 },
 {
+  path: 'plan-work',
+  loadComponent: () =>
+    import('./features/plan-work/plan-work')
+      .then(m => m.PlanWorkComponent)
+},
+{
   path: 'review',
   loadComponent: () =>
     import('./features/review/review')
       .then(m => m.ReviewComponent)
+},
+{
+  path: 'history',
+  loadComponent: () =>
+    import('./features/history/history')
+      .then(m => m.HistoryComponent)
 },
 {
   path: 'backlog',

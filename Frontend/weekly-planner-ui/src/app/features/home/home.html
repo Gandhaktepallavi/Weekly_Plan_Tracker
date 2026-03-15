@@ -2,32 +2,45 @@
   <div class="container">
     <h1>What do you want to do?</h1>
     <div class="user-greeting">
-      Hi, {{teamLeadName}}! 
-      <span class="role-chip">Team Lead</span>
+      Hi, {{ displayName }}!
+      <span class="role-chip" [class.member]="!isTeamLead">{{ isTeamLead ? 'Team Lead' : 'Team Member' }}</span>
     </div>
 
-    <div class="banner" *ngIf="!hasActivePlan">
+    <div class="banner" *ngIf="isTeamLead && !hasActivePlan">
       No planning weeks yet. Click "Start a New Week" to begin!
     </div>
+    <div class="banner" *ngIf="!isTeamLead && !hasActivePlan">
+      There's no active plan for you right now. Check back on Tuesday or ask your Team Lead.
+    </div>
 
-    <div class="grid">
+    <div class="grid" *ngIf="isTeamLead">
       <a routerLink="/planning/new" class="cardBtn">
-        <div class="cardTitle">🚀 Start a New Week</div>
+        <div class="cardTitle">Start a New Week</div>
         <p class="cardDesc">Set up a new planning cycle.</p>
       </a>
       <a routerLink="/backlog" class="cardBtn">
-        <div class="cardTitle">📋 Manage Backlog</div>
+        <div class="cardTitle">Manage Backlog</div>
         <p class="cardDesc">Add, edit, or browse work items.</p>
       </a>
       <a routerLink="/team" class="cardBtn">
-        <div class="cardTitle">👥 Manage Team Members</div>
+        <div class="cardTitle">Manage Team Members</div>
         <p class="cardDesc">Add or remove team members.</p>
       </a>
       <a routerLink="/history" class="cardBtn">
-        <div class="cardTitle">🗓️ View Past Weeks</div>
+        <div class="cardTitle">View Past Weeks</div>
         <p class="cardDesc">Look at completed planning cycles.</p>
       </a>
     </div>
 
+    <div class="grid" *ngIf="!isTeamLead">
+      <a routerLink="/backlog" class="cardBtn">
+        <div class="cardTitle">Manage Backlog</div>
+        <p class="cardDesc">Add, edit, or browse work items.</p>
+      </a>
+      <a routerLink="/history" class="cardBtn">
+        <div class="cardTitle">View Past Weeks</div>
+        <p class="cardDesc">Look at completed planning cycles.</p>
+      </a>
+    </div>
   </div>
 </div>

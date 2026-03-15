@@ -1,0 +1,16 @@
+<div class="form-card">
+  <input type="text" placeholder="Title" [(ngModel)]="title" />
+
+  <select [(ngModel)]="category">
+    <option>Client Focused</option>
+    <option>Tech Debt</option>
+    <option>R&D</option>
+  </select>
+
+  <input type="number" min="1" [(ngModel)]="estimatedHours" />
+
+  <div class="actions">
+    <button type="button" (click)="save()">Save</button>
+    <button type="button" class="secondary" (click)="cancel.emit()">Cancel</button>
+  </div>
+</div>

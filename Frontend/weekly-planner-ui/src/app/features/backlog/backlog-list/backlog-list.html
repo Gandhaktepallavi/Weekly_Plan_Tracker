@@ -1,0 +1,21 @@
+<div *ngIf="items.length === 0" class="empty">
+  No backlog items found.
+</div>
+
+<div *ngIf="items.length > 0" class="backlog-list">
+  <div class="backlog-row" *ngFor="let item of items">
+    <div class="row-left">
+      <div class="row-title">{{ item.title }}</div>
+      <div class="row-meta">
+        <span class="badge" [ngClass]="item.category.replace(' ', '-')">{{ item.category }}</span>
+        <span class="state-badge">{{ item.isAssigned ? 'ASSIGNED' : 'AVAILABLE' }}</span>
+        <span class="hours">{{ item.estimatedHours }}h est.</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="onEdit(item)">View &amp; Edit</button>
+      <button type="button" class="danger" (click)="onDelete(item.id)">Delete</button>
+    </div>
+  </div>
+</div>

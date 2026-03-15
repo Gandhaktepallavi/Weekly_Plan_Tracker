@@ -3,8 +3,8 @@ body {
 }
 
 .container {
-  max-width: 700px;
-  margin: 60px auto;
+  max-width: 1060px;
+  margin: 28px auto;
   padding: 20px;
   color: white;
   font-family: Arial, sans-serif;
@@ -12,13 +12,69 @@ body {
 
 h1 {
   font-size: 28px;
-  font-weight: bold;
-  color: #2563eb;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px;
 }
 
 .subtitle {
-  color: #94a3b8;
-  margin-bottom: 30px;
+  color: #dbeafe;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.title-highlight {
+  color: rgb(93, 93, 108);
+  padding: 0;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  max-width: 1200px;
+}
+
+.member-card {
+  background-color: #f3f4f6;
+  color: #0f172a;
+  padding: 16px 18px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+}
+
+.member-card.selectable {
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 124px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.member-card.selectable:hover {
+  border-color: #60a5fa;
+  transform: translateY(-2px);
+}
+
+.member-card.selectable.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45);
+}
+
+.member-name {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .input-section {
@@ -28,10 +84,12 @@ h1 {
 
 input {
   flex: 1;
-  padding: 12px;
+  padding: 12px 14px;
   border-radius: 8px 0 0 8px;
-  border: none;
-  font-size: 14px;
+  border: 1px solid #d1d5db;
+  font-size: 16px;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 input:focus {
@@ -44,6 +102,8 @@ input:focus {
   border: none;
   background-color: #2563eb;
   color: white;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -55,27 +115,21 @@ input:focus {
   color: #94a3b8;
 }
 
-.member-card {
-  background-color: #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .member-actions button {
   margin-left: 10px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
-  border: none;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #1e293b;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .member-actions .delete {
   background-color: #dc2626;
   color: white;
+  border-color: #dc2626;
 }
 
 .member-actions button:not(.delete) {
@@ -84,26 +138,56 @@ input:focus {
 }
 
 .lead-badge {
-  background-color: #16a34a;
-  padding: 4px 8px;
-  border-radius: 6px;
-  margin-left: 10px;
-  font-size: 12px;
+  background-color: #facc15;
+  color: #111827;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.member-badge {
+  background-color: #38bdf8;
+  color: #082f49;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .done-btn {
   margin-top: 30px;
-  padding: 14px 20px;
-  width: 100%;
+  padding: 14px 22px;
+  width: auto;
   border-radius: 10px;
   border: none;
   background-color: #2563eb;
   color: white;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .done-btn:disabled {
   background-color: #475569;
   cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  h1 {
+    font-size: 36px;
+  }
+
+  .subtitle {
+    font-size: 26px;
+  }
+
+  .member-name {
+    font-size: 30px;
+  }
+
+  .lead-badge,
+  .member-badge {
+    font-size: 16px;
+  }
 }

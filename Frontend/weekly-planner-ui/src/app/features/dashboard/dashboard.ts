@@ -12,7 +12,13 @@ import { PlannerApiService } from '../../core/planner-api';
 })
 export class DashboardComponent implements OnInit {
   dashboardData: any[] = [];
+<<<<<<< HEAD
   showBanner: boolean = true;
+=======
+  showBanner = true;
+  activeUserName = 'Team Lead';
+  activeUserRole = 'Team Lead';
+>>>>>>> backend-setup
 
   constructor(
     private api: PlannerApiService,
@@ -20,6 +26,16 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+<<<<<<< HEAD
+=======
+    const activeUserRaw = localStorage.getItem('activeUser');
+    if (activeUserRaw) {
+      const activeUser = JSON.parse(activeUserRaw);
+      this.activeUserName = activeUser?.name ?? this.activeUserName;
+      this.activeUserRole = activeUser?.isTeamLead ? 'Team Lead' : 'Team Member';
+    }
+
+>>>>>>> backend-setup
     this.api.getDashboard().subscribe((data: any) => {
       this.dashboardData = data;
     });
@@ -33,7 +49,11 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/review']);
   }
   goToPlanning() {
+<<<<<<< HEAD
     this.router.navigate(['/planning']);
+=======
+    this.router.navigate(['/plan-work']);
+>>>>>>> backend-setup
   }
 
   goToBacklog() {
@@ -45,6 +65,10 @@ export class DashboardComponent implements OnInit {
   }
 
   goToPastWeeks() {
+<<<<<<< HEAD
     this.router.navigate(['/review']);
+=======
+    this.router.navigate(['/history']);
+>>>>>>> backend-setup
   }
 }

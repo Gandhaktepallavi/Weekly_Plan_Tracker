@@ -8,7 +8,14 @@ namespace WeeklyPlanner.Infrastructure
         public DbSet<BacklogItem> BacklogItems { get; set; } = null!;
         public DbSet<WeeklyPlan> WeeklyPlans { get; set; } = null!;
         public DbSet<PlannedTask> PlannedTasks { get; set; } = null!;
+<<<<<<< HEAD
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
+=======
+        public DbSet<TaskAssignment> TaskAssignments { get; set; } = null!;
+        public DbSet<TeamMember> TeamMembers { get; set; } = null!;
+        public DbSet<CategorySettings> CategorySettings { get; set; } = null!;
+
+>>>>>>> backend-setup
         public WeeklyPlannerDbContext(DbContextOptions<WeeklyPlannerDbContext> options) 
             : base(options)
         {
@@ -16,7 +23,14 @@ namespace WeeklyPlanner.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Minimal Cosmos config - let EF auto-handle containers
+            // Configure entities
+            modelBuilder.Entity<BacklogItem>().HasKey(b => b.Id);
+            modelBuilder.Entity<WeeklyPlan>().HasKey(p => p.Id);
+            modelBuilder.Entity<PlannedTask>().HasKey(t => t.Id);
+            modelBuilder.Entity<TaskAssignment>().HasKey(ta => ta.Id);
+            modelBuilder.Entity<TeamMember>().HasKey(tm => tm.Id);
+            modelBuilder.Entity<CategorySettings>().HasKey(cs => cs.Id);
+
             base.OnModelCreating(modelBuilder);
         }
     }

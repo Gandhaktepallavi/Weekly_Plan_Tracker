@@ -1,6 +1,6 @@
 <div class="container">
 
-  <button routerLink="/home" class="back-btn">← Home</button>
+  <button routerLink="/home" class="back-btn">←Home</button>
 
   <h2>Set Up This Week's Plan</h2>
 
@@ -54,5 +54,9 @@
     (click)="openPlanning()">
     Open Planning for the Team
   </button>
+
+  <div *ngIf="validationError" class="validation-invalid">
+    {{ validationError }}
+  </div>
 
 </div>

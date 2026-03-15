@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { Router } from '@angular/router';
+=======
+import { Router, RouterLink } from '@angular/router';
+>>>>>>> backend-setup
 import { PlannerApiService } from '../../core/planner-api';
 
 interface TeamMember {
@@ -13,7 +17,7 @@ interface TeamMember {
 @Component({
   selector: 'app-planning',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './planning.html',
   styleUrls: ['./planning.css'],
 })
@@ -33,12 +37,32 @@ export class PlanningComponent implements OnInit {
   rndPercent: number = 0;
 
   totalHours: number = 0;
+  validationError = '';
+  isCurrentUserLead = false;
 
   ngOnInit() {
-    const stored = localStorage.getItem('teamMembers');
-    if (stored) {
-      this.teamMembers = JSON.parse(stored);
+    const activeUserRaw = localStorage.getItem('activeUser');
+    const activeUser = activeUserRaw ? JSON.parse(activeUserRaw) : null;
+    this.isCurrentUserLead = !!activeUser?.isTeamLead;
+
+    if (!this.isCurrentUserLead) {
+      this.validationError = 'Only Team Lead can set the weekly plan.';
+      this.router.navigate(['/home']);
+      return;
     }
+
+    this.api.getTeamMembers().subscribe({
+      next: (members) => {
+        this.teamMembers = members ?? [];
+        localStorage.setItem('teamMembers', JSON.stringify(this.teamMembers));
+      },
+      error: () => {
+        const stored = localStorage.getItem('teamMembers');
+        if (stored) {
+          this.teamMembers = JSON.parse(stored);
+        }
+      }
+    });
   }
 
   // -------------------------
@@ -103,6 +127,7 @@ export class PlanningComponent implements OnInit {
   }
 
   get isValid(): boolean {
+<<<<<<< HEAD
     return this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
   }
 
@@ -122,5 +147,60 @@ export class PlanningComponent implements OnInit {
     localStorage.setItem('activePlanning', JSON.stringify(planningData));
 
     this.router.navigate(['/dashboard']);
+=======
+    return this.isCurrentUserLead && this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
+  }
+
+  private persistAndGoToDashboard(planId?: string) {
+    const planningData = {
+      planningDate: this.planningDate,
+      workPeriod: this.workPeriod,
+      selectedMembers: this.selectedMembers,
+      clientPercent: this.clientPercent,
+      techDebtPercent: this.techDebtPercent,
+      rndPercent: this.rndPercent,
+      isOpen: true,
+      planId: planId ?? null
+    };
+
+    localStorage.setItem('activePlanning', JSON.stringify(planningData));
+    this.router.navigate(['/dashboard']);
+  }
+
+  openPlanning() {
+    this.validationError = '';
+    if (!this.isCurrentUserLead) {
+      this.validationError = 'Only Team Lead can set the weekly plan.';
+      return;
+    }
+    if (!this.isValid) {
+      this.validationError = 'Please pick Tuesday, choose members, and make percentages total 100%.';
+      return;
+    }
+
+    const activeUserRaw = localStorage.getItem('activeUser');
+    const activeUser = activeUserRaw ? JSON.parse(activeUserRaw) : null;
+    const lead = this.teamMembers.find(m => m.isTeamLead);
+
+    const request = {
+      planningDate: this.planningDate,
+      selectedMemberIds: this.selectedMembers,
+      clientPercent: this.clientPercent,
+      techDebtPercent: this.techDebtPercent,
+      rnDPercent: this.rndPercent,
+      leadUserId: activeUser?.id ?? lead?.id,
+      leadUserName: activeUser?.name ?? lead?.name
+    };
+
+    this.api.openPlanningCycle(request).subscribe({
+      next: (result) => {
+        this.persistAndGoToDashboard(result?.id);
+      },
+      error: (error) => {
+        const message = String(error?.error || '');
+        this.validationError = message || 'Unable to open planning. Please try again.';
+      }
+    });
+>>>>>>> backend-setup
   }
 }
