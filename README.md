@@ -7,8 +7,8 @@ The application allows teams to manage backlog items, plan weekly work, track pr
 🌐 Live Application
 
 Frontend deployed on Azure Static Web Apps
-
 https://black-stone-0ca0bf200.6.azurestaticapps.net
+
 📦 GitHub Repository
 
 https://github.com/Gandhaktepallavi/Weekly_Plan_Tracker
