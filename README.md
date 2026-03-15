@@ -7,7 +7,8 @@ The application allows teams to manage backlog items, plan weekly work, track pr
 🌐 Live Application
 
 Frontend deployed on Azure Static Web Apps
-https://black-stone-0ca0bf200.6.azurestaticapps.net
+
+https://69b6ea28c1a75f9d732662aa--spiffy-vacherin-1b1dec.netlify.app
 
 📦 GitHub Repository
 
