@@ -33,13 +33,24 @@ namespace WeeklyPlanner.Api.Controllers
         public async Task<ActionResult<WeeklyPlan>> GetCurrentWeeklyPlan()
         {
             var today = DateTime.Today;
+<<<<<<< HEAD
+            var weekStart = today.AddDays(-(int)today.DayOfWeek);
+=======
 
             // Monday as start of week
             var weekStart = today.AddDays(-(int)today.DayOfWeek + 1);
+>>>>>>> backend-setup
 
             var plan = await _context.WeeklyPlans
                 .FirstOrDefaultAsync(p => p.WeekStart.Date == weekStart.Date);
 
+<<<<<<< HEAD
+            return plan ?? new WeeklyPlan
+            {
+                WeekStart = weekStart,
+                IsFrozen = false
+            };
+=======
             if (plan == null)
             {
                 return new WeeklyPlan
@@ -50,6 +61,7 @@ namespace WeeklyPlanner.Api.Controllers
             }
 
             return plan;
+>>>>>>> backend-setup
         }
 
         // POST: api/weeklyplan
@@ -58,6 +70,12 @@ namespace WeeklyPlanner.Api.Controllers
         {
             plan.Id = Guid.NewGuid().ToString();
 
+<<<<<<< HEAD
+            _context.WeeklyPlans.Add(plan);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetCurrentWeeklyPlan), plan);
+=======
             _context.WeeklyPlans.Add(plan);
 
             await _context.SaveChangesAsync();
@@ -149,11 +167,12 @@ namespace WeeklyPlanner.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(plan);
+>>>>>>> backend-setup
         }
 
-        // PUT: api/weeklyplan/{id}/freeze
-        [HttpPut("{id}/freeze")]
-        public async Task<IActionResult> FreezePlan(string id)
+        // POST: api/weeklyplan/{id}/freeze
+        [HttpPost("{id}/freeze")]
+        public async Task<IActionResult> Freeze(string id)
         {
             var plan = await _context.WeeklyPlans.FindAsync(id);
 
@@ -167,6 +186,18 @@ namespace WeeklyPlanner.Api.Controllers
             return Ok(plan);
         }
 
+<<<<<<< HEAD
+        [HttpGet("active-exists")]
+        public IActionResult HasActivePlan()
+        {
+            return Ok(false);
+        }
+
+        [HttpGet("/api/user/profile")]
+        public IActionResult GetProfile()
+        {
+            return Ok(new { name = "jj", role = "Team Lead" });
+=======
         // GET: api/weeklyplan/active-exists
         [HttpGet("active-exists")]
         public async Task<IActionResult> HasActivePlan()
@@ -236,6 +267,7 @@ namespace WeeklyPlanner.Api.Controllers
             }
 
             return Ok(result);
+>>>>>>> backend-setup
         }
     }
 }

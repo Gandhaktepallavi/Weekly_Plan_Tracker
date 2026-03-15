@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;cd88b44fa4996f3b82c343262ef330fe28b2b8bcaac4c559c92ef99ca0afd331;C:/Users/Sai/Desktop/WeeklyPlanner/Weekly_Plan_Tracker/Frontend/weekly-planner-ui/src/app/app.ts"],
+  "sourcesContent": ["\n    .layout {\n      display: flex;\n      flex-direction: column;\n      min-height: 100vh;\n      background: var(--app-bg);\n      color: var(--app-text);\n    }\n\n    .content {\n      flex: 1;\n    }\n  "],
+  "mappings": ";AACI,CAAC;AACC,WAAS;AACT,kBAAgB;AAChB,cAAY;AACZ,cAAY,IAAI;AAChB,SAAO,IAAI;AACb;AAEA,CAAC;AACC,QAAM;AACR;",
+  "names": []
+}

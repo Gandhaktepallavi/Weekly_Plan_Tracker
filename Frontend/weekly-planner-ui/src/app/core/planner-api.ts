@@ -46,10 +46,14 @@ export interface CategorySettings {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PlannerApiService {
+<<<<<<< HEAD
+  private apiUrl = 'http://localhost:5120/api';
+=======
   private readonly apiUrl = this.resolveApiUrl();
+>>>>>>> backend-setup
 
   constructor(private http: HttpClient) {}
 
@@ -112,6 +116,8 @@ export class PlannerApiService {
     return this.http.get<WeeklyPlan>(`${this.apiUrl}/weeklyplan/current`);
   }
 
+<<<<<<< HEAD
+=======
   getPastWeeks(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/weeklyplan/past`);
   }
@@ -136,10 +142,52 @@ export class PlannerApiService {
     return this.http.put(`${this.apiUrl}/weeklyplan/${id}/freeze`, {});
   }
 
+>>>>>>> backend-setup
   getActivePlan(): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/weeklyplan/active-exists`);
   }
 
+<<<<<<< HEAD
+  getTeamMembers() {
+    return this.http.get(`${this.apiUrl}/team-members`);
+  }
+
+  assignTask(task: any) {
+    return this.http.post(`${this.apiUrl}/tasks`, task);
+  }
+
+  updateProgress(id: string, percent: number) {
+    return this.http.put(`${this.apiUrl}/tasks/${id}/progress?percent=${percent}`, {});
+  }
+
+  getDashboard() {
+    return this.http.get(`${this.apiUrl}/dashboard`);
+  }
+  addBacklogItem(item: any) {
+    return this.http.post(`${this.apiUrl}/backlog`, item);
+  }
+
+  deleteBacklogItem(id: string) {
+    return this.http.delete(`${this.apiUrl}/backlog/${id}`);
+  }
+  addTeamMember(member: any) {
+    return this.http.post(`${this.apiUrl}/team-members`, member);
+  }
+
+  makeLead(id: string) {
+    return this.http.put(`${this.apiUrl}/team-members/${id}/lead`, {});
+  }
+
+  deactivateMember(id: string) {
+    return this.http.put(`${this.apiUrl}/team-members/${id}/deactivate`, {});
+  }
+  updateMember(member:any){
+  return this.http.put(`${this.apiUrl}/team-members/${member.id}`, member);
+}
+getUserProfile() {
+  return this.http.get(`${this.apiUrl}/user/profile`);
+}
+=======
   hasActivePlan(): Observable<boolean> {
     return this.getActivePlan();
   }
@@ -243,4 +291,5 @@ export class PlannerApiService {
     if (normalized === 'r&d' || normalized === 'rnd') return 'RnD';
     return 'Client';
   }
+>>>>>>> backend-setup
 }

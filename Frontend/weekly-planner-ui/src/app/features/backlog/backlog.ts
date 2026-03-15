@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
+import { PlannerApiService } from '../../core/planner-api';
+import { BacklogItem } from '../../shared/models/backlog-item';
+import { Category } from '../../shared/models/backlog-item';
+=======
 import { RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 import { BacklogItem } from '../../shared/models/backlog-item';
@@ -8,6 +13,7 @@ import { Category } from '../../shared/models/backlog-item';
 import { BacklogListComponent } from './backlog-list/backlog-list';
 import { BacklogCreateComponent } from './backlog-create/backlog-create';
 import { BacklogEditComponent } from './backlog-edit/backlog-edit';
+>>>>>>> backend-setup
 
 @Component({
   selector: 'app-backlog',
@@ -41,11 +47,17 @@ export class BacklogComponent implements OnInit {
 
   constructor(private api: PlannerApiService) {}
 
+  constructor(private api: PlannerApiService) {}
+
   ngOnInit() {
     this.loadBacklog();
   }
 
   loadBacklog() {
+<<<<<<< HEAD
+    this.api.getBacklog().subscribe(data => {
+      this.backlog = data;
+=======
     this.api.getBacklog().subscribe({
       next: (data) => {
         this.backlog = data ?? [];
@@ -54,6 +66,7 @@ export class BacklogComponent implements OnInit {
       error: () => {
         this.backlog = this.loadBacklogFromLocal();
       }
+>>>>>>> backend-setup
     });
   }
 
@@ -84,6 +97,30 @@ export class BacklogComponent implements OnInit {
       }
     });
 
+<<<<<<< HEAD
+    const newItem = {
+      title: this.title,
+      category: this.category,
+      estimatedHours: this.estimatedHours
+    };
+
+    this.api.addBacklogItem(newItem).subscribe(() => {
+      this.loadBacklog();
+    });
+
+    this.toggleForm();
+  }
+
+  resetForm() {
+    this.title = '';
+    this.category = 'Client Focused';
+    this.estimatedHours = 1;
+  }
+
+  deleteItem(id: string) {
+    this.api.deleteBacklogItem(id).subscribe(() => {
+      this.loadBacklog();
+=======
     this.showForm = false;
   }
 
@@ -98,6 +135,7 @@ export class BacklogComponent implements OnInit {
         this.persistBacklogToLocal();
         this.showSuccess('Backlog item deleted locally.');
       }
+>>>>>>> backend-setup
     });
   }
 
@@ -120,6 +158,9 @@ export class BacklogComponent implements OnInit {
     });
   }
 
+<<<<<<< HEAD
+}
+=======
   closeToast() {
     this.showToast = false;
   }
@@ -170,3 +211,4 @@ export class BacklogComponent implements OnInit {
   }
 
 }
+>>>>>>> backend-setup

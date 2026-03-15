@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
+import { Router } from '@angular/router';
+import { PlannerApiService } from '../../core/planner-api';
+=======
 import { RouterLink } from '@angular/router';
 import { PlannerApiService } from '../../core/planner-api';
 
+>>>>>>> backend-setup
 
 interface TeamMember {
   id: string;
@@ -28,13 +33,21 @@ export class TeamComponent implements OnInit {
   editingMemberId: string | null = null;
   editNameValue = '';
 
+<<<<<<< HEAD
+  constructor(private api: PlannerApiService, private router: Router) {}
+=======
   constructor(private api: PlannerApiService) {}
+>>>>>>> backend-setup
 
   ngOnInit() {
     this.loadMembers();
   }
 
   loadMembers() {
+<<<<<<< HEAD
+    this.api.getTeamMembers().subscribe((data: any) => {
+      this.members = data;
+=======
     this.api.getTeamMembers().subscribe({
       next: (data: any) => {
         this.members = data ?? [];
@@ -50,6 +63,7 @@ export class TeamComponent implements OnInit {
           isActive: true
         }));
       }
+>>>>>>> backend-setup
     });
   }
 
@@ -60,6 +74,23 @@ export class TeamComponent implements OnInit {
       name: this.name.trim()
     };
 
+<<<<<<< HEAD
+    this.api.addTeamMember(member).subscribe(() => {
+      this.loadMembers();
+      this.name = '';
+      this.showSuccess();
+    });
+  }
+
+  editName(member: TeamMember) {
+    const updated = prompt('Edit name:', member.name);
+    if (!updated) return;
+
+    const updatedMember = { ...member, name: updated };
+
+    this.api.updateMember(updatedMember).subscribe(() => {
+      this.loadMembers();
+=======
     this.api.addTeamMember(member).subscribe({
       next: () => {
         this.loadMembers();
@@ -113,10 +144,15 @@ export class TeamComponent implements OnInit {
         this.cancelEdit();
         this.showSuccess('Team member updated locally.');
       }
+>>>>>>> backend-setup
     });
   }
 
   makeLead(member: TeamMember) {
+<<<<<<< HEAD
+    this.api.makeLead(member.id).subscribe(() => {
+      this.loadMembers();
+=======
     this.api.makeLead(member.id).subscribe({
       next: () => {
         this.loadMembers();
@@ -129,10 +165,15 @@ export class TeamComponent implements OnInit {
         this.syncTeamMembersToLocalStorage();
         this.showSuccess('Team lead updated locally.');
       }
+>>>>>>> backend-setup
     });
   }
 
   deactivate(member: TeamMember) {
+<<<<<<< HEAD
+    this.api.deactivateMember(member.id).subscribe(() => {
+      this.loadMembers();
+=======
     if (member.isTeamLead) {
       return;
     }
@@ -151,6 +192,7 @@ export class TeamComponent implements OnInit {
         this.syncTeamMembersToLocalStorage();
         this.showSuccess('Team member deactivated locally.');
       }
+>>>>>>> backend-setup
     });
   }
 

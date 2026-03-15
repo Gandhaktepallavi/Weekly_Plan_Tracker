@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
+import { Router } from '@angular/router';
+=======
 import { Router, RouterLink } from '@angular/router';
+>>>>>>> backend-setup
 import { PlannerApiService } from '../../core/planner-api';
 
 interface TeamMember {
@@ -123,6 +127,27 @@ export class PlanningComponent implements OnInit {
   }
 
   get isValid(): boolean {
+<<<<<<< HEAD
+    return this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
+  }
+
+  openPlanning() {
+    if (!this.isValid) return;
+
+    const planningData = {
+      planningDate: this.planningDate,
+      workPeriod: this.workPeriod,
+      selectedMembers: this.selectedMembers,
+      clientPercent: this.clientPercent,
+      techDebtPercent: this.techDebtPercent,
+      rndPercent: this.rndPercent,
+      isOpen: true,
+    };
+
+    localStorage.setItem('activePlanning', JSON.stringify(planningData));
+
+    this.router.navigate(['/dashboard']);
+=======
     return this.isCurrentUserLead && this.totalPercent === 100 && this.selectedMembers.length > 0 && !!this.planningDate;
   }
 
@@ -176,5 +201,6 @@ export class PlanningComponent implements OnInit {
         this.validationError = message || 'Unable to open planning. Please try again.';
       }
     });
+>>>>>>> backend-setup
   }
 }

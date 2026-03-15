@@ -1,7 +1,20 @@
-using System.Text.Json.Serialization;
+namespace WeeklyPlanner.Domain.Entities;
 
-namespace WeeklyPlanner.Domain.Entities
+public class WeeklyPlan
 {
+<<<<<<< HEAD
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    public DateTime WeekStart { get; set; }
+
+    public bool IsFrozen { get; set; }
+
+    public int ClientPercent { get; set; }
+
+    public int TechDebtPercent { get; set; }
+
+    public int RndPercent { get; set; }
+=======
     public class WeeklyPlan
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -30,4 +43,5 @@ namespace WeeklyPlanner.Domain.Entities
 
         public double Percentage { get; set; }
     }
+>>>>>>> backend-setup
 }

@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+<<<<<<< HEAD
+=======
 import { filter } from 'rxjs';
+>>>>>>> backend-setup
 import { PlannerApiService } from '../../core/planner-api';
 
 @Component({
@@ -16,6 +19,20 @@ export class NavbarComponent implements OnInit {
 
   userName: string = '';
   isLead: boolean = false;
+<<<<<<< HEAD
+  darkMode = false;
+
+  constructor(private api: PlannerApiService) {}
+
+  ngOnInit() {
+    this.loadProfile();
+  }
+
+  loadProfile() {
+    this.api.getUserProfile().subscribe((data: any) => {
+      this.userName = data.name;
+      this.isLead = data.role === 'Team Lead';
+=======
   darkMode = true;
   private readonly themeStorageKey = 'weeklyplanner.theme';
 
@@ -48,11 +65,18 @@ export class NavbarComponent implements OnInit {
         this.userName = '';
         this.isLead = false;
       }
+>>>>>>> backend-setup
     });
   }
 
   toggleTheme() {
     this.darkMode = !this.darkMode;
+<<<<<<< HEAD
+    document.body.classList.toggle('light-theme');
+  }
+
+}
+=======
     this.applyTheme();
     localStorage.setItem(this.themeStorageKey, this.darkMode ? 'dark' : 'light');
   }
@@ -67,3 +91,4 @@ export class NavbarComponent implements OnInit {
     document.body.classList.toggle('light-theme', !this.darkMode);
   }
 }
+>>>>>>> backend-setup
