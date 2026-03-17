@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*", "/_framework/*", "/*.{css,scss,js,png,gif,ico,json,svg,map,woff,woff2,ttf,eot}"]
+  },
+  "globalHeaders": {
+    "cache-control": "no-store"
+  },
+  "platform": {
+    "apiRuntime": "node:20"
+  }
+}

@@ -1,0 +1,49 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Backend/**'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  APP_SERVICE_NAME: 'weeklyplanner-api'       # ← your App Service name in Azure
+  RESOURCE_GROUP: 'rg-weeklyplanner'          # ← your Resource Group name
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore Backend/WeeklyPlanner.sln
+
+    - name: Build
+      run: dotnet build Backend/WeeklyPlanner.sln --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish Backend/src/WeeklyPlanner.Api/WeeklyPlanner.Api.csproj \
+        --configuration Release \
+        --output ./publish \
+        --no-build
+
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.APP_SERVICE_NAME }}
+        package: './publish'
